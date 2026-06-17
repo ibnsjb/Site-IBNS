@@ -450,14 +450,119 @@
 </div>
 </div>
 
-<script>
+<script type="module">
+// ======== FIREBASE ========
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getDatabase, ref, set, get, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCxmCHd9oLSjny3iVIYtQiD01FtmsUgRzk",
+  authDomain: "siteibns.firebaseapp.com",
+  databaseURL: "https://siteibns-default-rtdb.firebaseio.com",
+  projectId: "siteibns",
+  storageBucket: "siteibns.firebasestorage.app",
+  messagingSenderId: "1083720587511",
+  appId: "1:1083720587511:web:d5ddb74c042076ee845bf2"
+};
+const fbApp = initializeApp(firebaseConfig);
+const db = getDatabase(fbApp);
+
+// Salva eventos no Firebase
+async function fbSaveEventos() {
+  try {
+    await set(ref(db, 'ibns/eventos'), eventos);
+  } catch(e) { console.warn('Firebase save eventos:', e); }
+}
+
+// Salva checklist no Firebase
+async function fbSaveChecklist() {
+  try {
+    await set(ref(db, 'ibns/checklist'), checklist);
+  } catch(e) { console.warn('Firebase save checklist:', e); }
+}
+
+// Salva config do Sheets no Firebase
+async function fbSaveSheets(data) {
+  try {
+    await set(ref(db, 'ibns/sheets_config'), data);
+  } catch(e) { console.warn('Firebase save sheets:', e); }
+}
+
+// Escuta eventos em tempo real
+let _primeiraCarregaEventos = true;
+function fbListenEventos() {
+  onValue(ref(db, 'ibns/eventos'), snap => {
+    const data = snap.val();
+    if(data) {
+      const arr = Array.isArray(data) ? data : Object.values(data);
+      eventos = arr.filter(Boolean).sort((a,b)=>a.data.localeCompare(b.data));
+    } else {
+      eventos = [];
+    }
+
+    // Na primeira carga, seleciona automaticamente o evento mais próximo
+    if(_primeiraCarregaEventos && eventos.length) {
+      _primeiraCarregaEventos = false;
+      const ev = getEventoMaisProximo();
+      if(ev) {
+        dataSelecionada = ev.data;
+        selectedEventoId = ev.evento_id;
+        calendarMonth = +ev.data.slice(5,7) - 1;
+        calendarYear  = +ev.data.slice(0,4);
+        const dpHidden = document.getElementById('date-picker-hidden');
+        if(dpHidden) dpHidden.value = ev.data;
+        initCalendar();
+      }
+    }
+
+    renderEventosList();
+    renderCulto();
+    renderEscala();
+    updateImportLogVisibility();
+  });
+}
+
+// Escuta checklist em tempo real
+function fbListenChecklist() {
+  onValue(ref(db, 'ibns/checklist'), snap => {
+    const data = snap.val();
+    checklist = data || {};
+    renderCulto();
+  });
+}
+
+// Escuta config do Sheets em tempo real (sincroniza URL entre dispositivos)
+function fbListenSheets() {
+  onValue(ref(db, 'ibns/sheets_config'), snap => {
+    const data = snap.val();
+    if(data) {
+      if(data.url_eventos) localStorage.setItem('ibns_sheets_url_eventos', data.url_eventos);
+      if(data.url_escala)  localStorage.setItem('ibns_sheets_url_escala',  data.url_escala);
+      if(data.url_ordem)   localStorage.setItem('ibns_sheets_url_ordem',   data.url_ordem);
+    }
+  });
+}
+
+// Expõe funções Firebase para uso nas funções globais abaixo
+window._fbSaveEventos   = fbSaveEventos;
+window._fbSaveChecklist = fbSaveChecklist;
+window._fbSaveSheets    = fbSaveSheets;
+window._fbReady = false;
+
+// Inicia listeners assim que o módulo carrega
+fbListenEventos();
+fbListenChecklist();
+fbListenSheets();
+window._fbReady = true;
+// ======== FIM FIREBASE ========
+
 const SENHA = '0573';
-let eventos = JSON.parse(localStorage.getItem('ibns_eventos') || '[]');
-let checklist = JSON.parse(localStorage.getItem('ibns_checklist') || '{}');
+let eventos = [];
+let checklist = {};
 let ordemItems = [];
 let escalaItems = [];
 let dataSelecionada = '';
-let selectedEventoId = null; // novo: evento_id em vez de index
+let selectedEventoId = null;
 let currentCultoEventIndex = null;
 let cultoReorderMode = false;
 let cultoTempOrder = [];
@@ -504,7 +609,7 @@ function migrateFromV4() {
     }
     return ev;
   });
-  localStorage.setItem('ibns_eventos', JSON.stringify(migrated));
+  // localStorage removido — dados gerenciados pelo Firebase
   return migrated;
 }
 
@@ -739,7 +844,7 @@ function salvarEvento() {
   }
   
   eventos.sort((a,b)=>a.data.localeCompare(b.data));
-  localStorage.setItem('ibns_eventos',JSON.stringify(eventos));
+  window._fbSaveEventos && window._fbSaveEventos();
   al.innerHTML=`<div class="alert success">Evento ${isEdit ? 'atualizado' : 'salvo'} com sucesso!</div>`;
   showToast(`Evento ${isEdit ? 'atualizado' : 'salvo'} com sucesso!`, 'success');
   renderEventosList();
@@ -820,7 +925,7 @@ function renderEventosList() {
 function deletarEvento(i) {
   if(!confirm('Excluir este evento?')) return;
   eventos.splice(i,1);
-  localStorage.setItem('ibns_eventos',JSON.stringify(eventos));
+  window._fbSaveEventos && window._fbSaveEventos();
   renderEventosList(); renderCulto();
   showToast('Evento excluído com sucesso', 'success');
 }
@@ -839,7 +944,7 @@ function importJSON(evt) {
         else eventos.push(ev);
       });
       eventos.sort((a,b)=>a.data.localeCompare(b.data));
-      localStorage.setItem('ibns_eventos',JSON.stringify(eventos));
+      window._fbSaveEventos && window._fbSaveEventos();
       renderEventosList(); renderCulto();
       const al=document.getElementById('form-alert');
       al.innerHTML=`<div class="alert success">JSON importado! ${arr.length} evento(s).</div>`;
@@ -882,6 +987,8 @@ function saveAndLoadSheets() {
   if(u1) localStorage.setItem('ibns_sheets_url_eventos', u1);
   if(u2) localStorage.setItem('ibns_sheets_url_escala', u2);
   if(u3) localStorage.setItem('ibns_sheets_url_ordem', u3);
+  // Salva URLs no Firebase para sincronizar com todos os dispositivos
+  if(window._fbSaveSheets) window._fbSaveSheets({url_eventos:u1, url_escala:u2, url_ordem:u3});
   loadSheets();
 }
 
@@ -1094,7 +1201,7 @@ async function loadSheets() {
       if(idx>=0) eventos[idx]=ev; else eventos.push(ev);
     });
     eventos.sort((a,b)=>a.data.localeCompare(b.data));
-    localStorage.setItem('ibns_eventos',JSON.stringify(eventos));
+    window._fbSaveEventos && window._fbSaveEventos();
     renderEventosList(); renderCulto(); renderEscala();
     // save import log for inspection
     try{ saveImportLog(importLog||[]); }catch(e){ console.error('Could not save import log', e); }
@@ -1427,7 +1534,7 @@ function toggleReorder() {
 function saveCultoOrder(){
   if(currentCultoEventIndex==null) return showToast('Nenhum evento selecionado','error');
   eventos[currentCultoEventIndex].ordem = cultoTempOrder;
-  localStorage.setItem('ibns_eventos',JSON.stringify(eventos));
+  window._fbSaveEventos && window._fbSaveEventos();
   cultoReorderMode = false;
   const toggle = document.getElementById('culto-reorder-toggle');
   const saveBtn = document.getElementById('culto-save-order');
@@ -1473,7 +1580,7 @@ function renderEscala() {
 function toggleCheck(key,idx) {
   if(!checklist[key]) checklist[key]={};
   checklist[key][idx]=!checklist[key][idx];
-  localStorage.setItem('ibns_checklist',JSON.stringify(checklist));
+  window._fbSaveChecklist && window._fbSaveChecklist();
   renderCulto();
 }
 
@@ -1488,66 +1595,33 @@ function initials(n){return n.split(' ').filter(Boolean).slice(0,2).map(x=>x[0].
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 window.onload=()=>{
-  eventos = migrateFromV4();
-  
-  if(!eventos.length){
-    const hoje=new Date().toISOString().slice(0,10);
-    const ev_id = generateEventoId(hoje, 'Celebração da Família', '09:00');
-    eventos=[{
-      evento_id: ev_id,
-      data:hoje,
-      tipo:'Celebração da Família',
-      hora:'09:00',
-      tema:'A fé que move montanhas',
-      ordem:[
-        {etapa:'Abertura em oração',min:3,responsavel:''},
-        {etapa:'Louvor de entrada',min:15,responsavel:'Maria Souza'},
-        {etapa:'Avisos da semana',min:5,responsavel:''},
-        {etapa:'Leitura Bíblica',min:5,responsavel:'Carlos Lima'},
-        {etapa:'Mensagem',min:40,responsavel:'Pr. João Silva'},
-        {etapa:'Dízimos e Ofertas',min:7,responsavel:'Pedro Costa'},
-        {etapa:'Encerramento',min:5,responsavel:''}
-      ],
-      escala:[
-        {funcao:'Pregador / Ministro',nome:'Pr. João Silva'},
-        {funcao:'Louvor / Música',nome:'Maria Souza'},
-        {funcao:'Leitura Bíblica',nome:'Carlos Lima'},
-        {funcao:'Oração Inicial',nome:'Ana Paula'},
-        {funcao:'Oração Final',nome:'José Ferreira'},
-        {funcao:'Dízimos e Ofertas',nome:'Pedro Costa'},
-        {funcao:'Mídias / Projeção',nome:'Lucas Mendes'},
-        {funcao:'Recepção / Portaria',nome:'Fernanda Rocha'}
-      ]
-    }];
-    localStorage.setItem('ibns_eventos',JSON.stringify(eventos));
-  }
-  
-  const ev=getEventoMaisProximo();
-  if(ev){
-    const dpHidden = document.getElementById('date-picker-hidden');
-    if(dpHidden) dpHidden.value = ev.data;
-    dataSelecionada = ev.data;
-    selectedEventoId = ev.evento_id;
-    const month = +ev.data.slice(5,7) - 1;
-    const year = +ev.data.slice(0,4);
-    calendarMonth = month;
-    calendarYear = year;
-  }
+  // Com Firebase, os dados chegam via onValue (listeners já ativos no módulo).
+  // Apenas inicializa o calendário e renderiza estado inicial vazio enquanto carrega.
+  const hoje = new Date();
+  calendarMonth = hoje.getMonth();
+  calendarYear  = hoje.getFullYear();
   initCalendar();
   renderCulto();
   updateImportLogVisibility();
+
+  // Indicador de carregamento inicial
+  const display = document.getElementById('event-display');
+  if(display && !eventos.length) {
+    display.innerHTML = '<div class="empty-state"><div class="icon" style="font-size:32px;animation:spin 1s linear infinite;display:inline-block">⏳</div><p style="margin-top:12px">Carregando dados do Firebase...</p></div>';
+  }
 };
 
-setInterval(()=>{
-  try{
-    const stored = JSON.parse(localStorage.getItem('ibns_eventos') || '[]');
-    const storedCheck = JSON.parse(localStorage.getItem('ibns_checklist') || '{}');
-    if(JSON.stringify(stored)!==JSON.stringify(eventos)) eventos = stored;
-    checklist = storedCheck;
-    renderEventosList(); renderCulto(); renderEscala();
-  }catch(e){/* ignore parse errors */}
-},3000);
+// setInterval de polling de localStorage removido — Firebase usa tempo real via onValue.
+// Mantemos apenas o auto-reload do Sheets (a cada 5min) para quem usa Google Sheets.
+setInterval(async()=>{
+  if(localStorage.getItem('ibns_sheets_url_eventos')) {
+    try{ await loadSheets(); }catch(e){}
+  }
+}, 5*60*1000);
 </script>
+<style>
+@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+</style>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
