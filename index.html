@@ -467,17 +467,17 @@ const firebaseConfig = {
 const fbApp = initializeApp(firebaseConfig);
 const db = getDatabase(fbApp);
 
-// Salva eventos no Firebase
+// Salva eventos no Firebase (acessa window.eventos do script principal)
 async function fbSaveEventos() {
   try {
-    await set(ref(db, 'ibns/eventos'), eventos);
+    await set(ref(db, 'ibns/eventos'), window.eventos || []);
   } catch(e) { console.warn('Firebase save eventos:', e); }
 }
 
-// Salva checklist no Firebase
+// Salva checklist no Firebase (acessa window.checklist do script principal)
 async function fbSaveChecklist() {
   try {
-    await set(ref(db, 'ibns/checklist'), checklist);
+    await set(ref(db, 'ibns/checklist'), window.checklist || {});
   } catch(e) { console.warn('Firebase save checklist:', e); }
 }
 
@@ -495,43 +495,42 @@ function fbListenEventos() {
     const data = snap.val();
     if(data) {
       const arr = Array.isArray(data) ? data : Object.values(data);
-      eventos = arr.filter(Boolean).sort((a,b)=>a.data.localeCompare(b.data));
+      window.eventos = arr.filter(Boolean).sort((a,b)=>a.data.localeCompare(b.data));
     } else {
-      eventos = [];
+      window.eventos = [];
     }
 
     // Na primeira carga, seleciona automaticamente o evento mais próximo
-    if(_primeiraCarregaEventos && eventos.length) {
+    if(_primeiraCarregaEventos && window.eventos.length) {
       _primeiraCarregaEventos = false;
-      const ev = getEventoMaisProximo();
+      const ev = window.getEventoMaisProximo();
       if(ev) {
-        dataSelecionada = ev.data;
-        selectedEventoId = ev.evento_id;
-        calendarMonth = +ev.data.slice(5,7) - 1;
-        calendarYear  = +ev.data.slice(0,4);
+        window.dataSelecionada = ev.data;
+        window.selectedEventoId = ev.evento_id;
+        window.calendarMonth = +ev.data.slice(5,7) - 1;
+        window.calendarYear  = +ev.data.slice(0,4);
         const dpHidden = document.getElementById('date-picker-hidden');
         if(dpHidden) dpHidden.value = ev.data;
-        initCalendar();
+        window.initCalendar();
       }
     }
 
-    renderEventosList();
-    renderCulto();
-    renderEscala();
-    updateImportLogVisibility();
+    if(window.renderEventosList) window.renderEventosList();
+    if(window.renderCulto) window.renderCulto();
+    if(window.renderEscala) window.renderEscala();
+    if(window.updateImportLogVisibility) window.updateImportLogVisibility();
   });
 }
 
 // Escuta checklist em tempo real
 function fbListenChecklist() {
   onValue(ref(db, 'ibns/checklist'), snap => {
-    const data = snap.val();
-    checklist = data || {};
-    renderCulto();
+    window.checklist = snap.val() || {};
+    if(window.renderCulto) window.renderCulto();
   });
 }
 
-// Escuta config do Sheets em tempo real (sincroniza URL entre dispositivos)
+// Escuta config do Sheets em tempo real
 function fbListenSheets() {
   onValue(ref(db, 'ibns/sheets_config'), snap => {
     const data = snap.val();
@@ -543,22 +542,34 @@ function fbListenSheets() {
   });
 }
 
-// Expõe funções Firebase para uso nas funções globais abaixo
+// Expõe funções Firebase para uso no script principal
 window._fbSaveEventos   = fbSaveEventos;
 window._fbSaveChecklist = fbSaveChecklist;
 window._fbSaveSheets    = fbSaveSheets;
-window._fbReady = false;
 
-// Inicia listeners assim que o módulo carrega
-fbListenEventos();
-fbListenChecklist();
-fbListenSheets();
-window._fbReady = true;
+// Expõe os listeners para serem iniciados após o script principal carregar
+window._fbStartListeners = () => {
+  fbListenEventos();
+  fbListenChecklist();
+  fbListenSheets();
+};
 // ======== FIM FIREBASE ========
+</script>
 
+<script>
+// ======== CÓDIGO PRINCIPAL (global) ========
 const SENHA = '0573';
 let eventos = [];
 let checklist = {};
+// Expõe no window para o módulo Firebase acessar
+Object.defineProperty(window, 'eventos', {
+  get() { return eventos; },
+  set(v) { eventos = v; }
+});
+Object.defineProperty(window, 'checklist', {
+  get() { return checklist; },
+  set(v) { checklist = v; }
+});
 let ordemItems = [];
 let escalaItems = [];
 let dataSelecionada = '';
@@ -1595,8 +1606,10 @@ function initials(n){return n.split(' ').filter(Boolean).slice(0,2).map(x=>x[0].
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 window.onload=()=>{
-  // Com Firebase, os dados chegam via onValue (listeners já ativos no módulo).
-  // Apenas inicializa o calendário e renderiza estado inicial vazio enquanto carrega.
+  // Inicia listeners Firebase (módulo já carregado, funções expostas no window)
+  if(window._fbStartListeners) window._fbStartListeners();
+
+  // Inicializa calendário com mês atual enquanto dados carregam
   const hoje = new Date();
   calendarMonth = hoje.getMonth();
   calendarYear  = hoje.getFullYear();
