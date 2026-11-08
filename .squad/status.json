@@ -1,0 +1,41 @@
+{
+  "project_id": "site-ibns",
+  "project_name": "⛪ Site IBNS (Liturgia, Escalas & Painel)",
+  "badge": "HOMOLOGADO · SPRINT 1 (UI/UX REDESIGN & APPLE HIG 105/105 QA-PASS)",
+  "updated_at": "2026-11-08T04:52:00.000Z",
+  "classification": "M",
+  "overall_progress": 100,
+  "stages": {
+    "ux_requirements": {
+      "name": "1. UI/UX Redesign & Apple HIG (Design Studio AI)",
+      "percent": 100,
+      "status": "Concluído (Glassmorphism, Segmented Controls, Safe-Areas & Cores IBNS)"
+    },
+    "arch_dba": {
+      "name": "2. Arquitetura de Dados & Persistência (DBA)",
+      "percent": 100,
+      "status": "Concluído (Firebase Realtime ativo + LocalStorage fallback + DDL Supabase no DOC-05)"
+    },
+    "frontend_mobile": {
+      "name": "3. Frontend SPA & Componentes Reativos",
+      "percent": 100,
+      "status": "Concluído (Tailwind CSS, Inter Font, Run Sheet interativo & Drag-and-Drop touch/desktop)"
+    },
+    "backend_api": {
+      "name": "4. Integrações Litúrgicas & Google Sheets",
+      "percent": 100,
+      "status": "Concluído (Parser CSV tolerante a delimitadores, logs e backup JSON)"
+    },
+    "qa_tests": {
+      "name": "5. QA & Suíte de Testes Automatizados",
+      "percent": 100,
+      "status": "Concluído (105/105 testes aprovados QA-PASS 100%)"
+    },
+    "devsecops_sre": {
+      "name": "6. DevSecOps & SRE (SEC-PASS & GitHub Pages)",
+      "percent": 100,
+      "status": "Concluído (Auditoria SEC-PASS sem vulnerabilidades e branch dev pronta para merge)"
+    }
+  },
+  "current_sprint": "Sprint 1 - Homologada com Sucesso (105/105 QA-PASS & SEC-PASS)"
+}
