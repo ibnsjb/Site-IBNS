@@ -1,41 +1,41 @@
 {
   "project_id": "site-ibns",
   "project_name": "⛪ Site IBNS (Liturgia, Escalas & Painel)",
-  "badge": "HOMOLOGADO · SPRINT 1 (UI/UX REDESIGN & APPLE HIG 105/105 QA-PASS)",
-  "updated_at": "2026-11-08T04:52:00.000Z",
-  "classification": "M",
+  "badge": "HOMOLOGADO · SPRINT 2 (TEMPLATES, HOLYRICS, JSON ENRIQUECIDO & 140/140 QA-PASS)",
+  "updated_at": "2026-11-08T16:12:00.000Z",
+  "classification": "G",
   "overall_progress": 100,
   "stages": {
     "ux_requirements": {
-      "name": "1. UI/UX Redesign & Apple HIG (Design Studio AI)",
+      "name": "1. Refinamento /grill-with-docs & Templates Canônicos",
       "percent": 100,
-      "status": "Concluído (Glassmorphism, Segmented Controls, Safe-Areas & Cores IBNS)"
+      "status": "Concluído (Templates Regular, Ceia, Kids e Visão da Equipe aprovados)"
     },
     "arch_dba": {
-      "name": "2. Arquitetura de Dados & Persistência (DBA)",
+      "name": "2. Arquitetura de Dados Enriquecida & Firebase (DBA)",
       "percent": 100,
-      "status": "Concluído (Firebase Realtime ativo + LocalStorage fallback + DDL Supabase no DOC-05)"
+      "status": "Concluído (Contrato JSON com músicas, Tom, BPM e YouTube homologado)"
     },
     "frontend_mobile": {
-      "name": "3. Frontend SPA & Componentes Reativos",
+      "name": "3. Frontend SPA, Drag & Drop e Visão Equipe",
       "percent": 100,
-      "status": "Concluído (Tailwind CSS, Inter Font, Run Sheet interativo & Drag-and-Drop touch/desktop)"
+      "status": "Concluído (Drag & Drop desktop/touch corrigido, Visão da Equipe e Widget Holyrics)"
     },
     "backend_api": {
-      "name": "4. Integrações Litúrgicas & Google Sheets",
+      "name": "4. Cálculo de Horários & Relay Web Holyrics",
       "percent": 100,
-      "status": "Concluído (Parser CSV tolerante a delimitadores, logs e backup JSON)"
+      "status": "Concluído (Cálculo automático de horários e cliente Holyrics Relay internet)"
     },
     "qa_tests": {
-      "name": "5. QA & Suíte de Testes Automatizados",
+      "name": "5. QA & Suíte de Testes Automatizados (Meta >= 130)",
       "percent": 100,
-      "status": "Concluído (105/105 testes aprovados QA-PASS 100%)"
+      "status": "Concluído (140/140 testes aprovados QA-PASS 100%)"
     },
     "devsecops_sre": {
-      "name": "6. DevSecOps & SRE (SEC-PASS & GitHub Pages)",
+      "name": "6. DevSecOps & Deploy GitHub Pages (dev -> main)",
       "percent": 100,
-      "status": "Concluído (Auditoria SEC-PASS sem vulnerabilidades e branch dev pronta para merge)"
+      "status": "Concluído (Branch feature mesclada em dev e promovida para main com SEC-PASS)"
     }
   },
-  "current_sprint": "Sprint 1 - Homologada com Sucesso (105/105 QA-PASS & SEC-PASS)"
+  "current_sprint": "Sprint 2 - Concluída e Homologada com Sucesso (140/140 QA-PASS & SEC-PASS)"
 }

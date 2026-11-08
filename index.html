@@ -344,94 +344,98 @@
           </div>
         </div>
 
-        <!-- SEÇÃO: SINCRONIZAÇÃO GOOGLE SHEETS & LOGS -->
-        <div id="sheets-section" class="glass-card rounded-3xl p-5 sm:p-6 shadow-apple-card border border-sky-100">
-          <div class="flex items-center justify-between mb-4">
+        <!-- SEÇÃO: INTEGRAÇÃO LITÚRGICA (JSON DO PLANEJAMENTO & HOLYRICS ONLINE) -->
+        <div id="integracao-section" class="glass-card rounded-3xl p-5 sm:p-6 shadow-apple-card border border-sky-100">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              <div class="w-10 h-10 rounded-2xl bg-sky-50 text-ibns-blue flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
               </div>
               <div>
-                <h3 class="text-sm sm:text-base font-bold text-slate-900">Integração Google Sheets (CSV)</h3>
-                <p class="text-xs text-slate-500">Sincronize a planilha oficial de cultos e escalas diretamente com o Firebase</p>
+                <h3 class="text-sm sm:text-base font-bold text-slate-900">Integração Litúrgica & Planejamento</h3>
+                <p class="text-xs text-slate-500">Importe o planejamento mensal em JSON ou sincronize diretamente com o Holyrics (Relay Web)</p>
               </div>
             </div>
-            <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-semibold">
-              <button onclick="sheetsTabSwitch('guia', this)" class="sheets-tab sheets-tab-active px-3 py-1.5 rounded-lg transition">Guia</button>
-              <button onclick="sheetsTabSwitch('url', this)" class="sheets-tab px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">Configuração</button>
-              <button onclick="sheetsTabSwitch('modelo', this)" class="sheets-tab px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">Modelo</button>
+            <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-semibold self-start sm:self-auto">
+              <button onclick="integracaoTabSwitch('json', this)" id="tab-btn-json" class="integracao-tab integracao-tab-active px-3 py-1.5 rounded-lg bg-white text-ibns-navy shadow-sm transition">Importar JSON</button>
+              <button onclick="integracaoTabSwitch('holyrics', this)" id="tab-btn-holyrics" class="integracao-tab px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">Holyrics Online</button>
+              <button onclick="integracaoTabSwitch('backup', this)" id="tab-btn-backup" class="integracao-tab px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">Backup & Modelo</button>
             </div>
           </div>
 
-          <!-- Aba 1: Guia Rápido -->
-          <div id="sheets-tab-guia" class="sheets-tab-content block">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 my-3 text-xs">
-              <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/70">
-                <span class="inline-flex w-5 h-5 rounded-full bg-ibns-blue text-white items-center justify-center font-bold text-[10px] mb-2">1</span>
-                <p class="font-semibold text-slate-800">Publicar na Web</p>
-                <p class="text-slate-500 mt-1 leading-relaxed">No Google Sheets, acesse <strong>Arquivo → Compartilhar → Publicar na Web</strong>.</p>
-              </div>
-              <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/70">
-                <span class="inline-flex w-5 h-5 rounded-full bg-ibns-blue text-white items-center justify-center font-bold text-[10px] mb-2">2</span>
-                <p class="font-semibold text-slate-800">Formato CSV</p>
-                <p class="text-slate-500 mt-1 leading-relaxed">Selecione a página desejada e o formato <strong>Valores separados por vírgula (.csv)</strong>.</p>
-              </div>
-              <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/70">
-                <span class="inline-flex w-5 h-5 rounded-full bg-ibns-blue text-white items-center justify-center font-bold text-[10px] mb-2">3</span>
-                <p class="font-semibold text-slate-800">Colar Links & Carregar</p>
-                <p class="text-slate-500 mt-1 leading-relaxed">Cole os links na aba <strong>Configuração</strong> e clique em <em>Sincronizar</em>.</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Aba 2: URLs de Configuração -->
-          <div id="sheets-tab-url" class="sheets-tab-content hidden space-y-3 my-3">
+          <!-- Aba 1: Importar JSON de Culto e Planejamento -->
+          <div id="integracao-tab-json" class="integracao-tab-content block space-y-3 my-3">
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">URL CSV · Eventos (Data, Hora, Tipo, Tema, Pregador)</label>
-              <input type="text" id="sheets-url-eventos" placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv&gid=0" class="w-full text-xs font-mono p-2.5 rounded-xl border border-slate-200 bg-white focus:border-ibns-blue focus:ring-2 focus:ring-sky-100 outline-none">
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-xs font-semibold text-slate-700">JSON do Planejamento Mensal / Ordem de Culto</label>
+                <span class="text-[11px] text-slate-400">Contém temas, momentos e repertório musical</span>
+              </div>
+              <textarea id="json-import-input" rows="5" placeholder='Cole aqui o JSON gerado no planejamento mensal (com tema, momentos e repertório musical)...' class="w-full text-xs font-mono p-3 rounded-2xl border border-slate-200 bg-white focus:border-ibns-blue focus:ring-2 focus:ring-sky-100 outline-none leading-relaxed"></textarea>
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">URL CSV · Ordem de Culto (Etapas, Minutos, Responsável)</label>
-              <input type="text" id="sheets-url-ordem" placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv&gid=1" class="w-full text-xs font-mono p-2.5 rounded-xl border border-slate-200 bg-white focus:border-ibns-blue focus:ring-2 focus:ring-sky-100 outline-none">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">URL CSV · Escalas (Ministério, Cargo, Voluntário)</label>
-              <input type="text" id="sheets-url-escala" placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv&gid=2" class="w-full text-xs font-mono p-2.5 rounded-xl border border-slate-200 bg-white focus:border-ibns-blue focus:ring-2 focus:ring-sky-100 outline-none">
-            </div>
-            <div class="flex items-center gap-2 pt-2">
-              <button onclick="saveAndLoadSheets()" class="px-5 py-2.5 rounded-xl bg-ibns-navy hover:bg-ibns-blue text-white text-xs font-bold shadow-sm transition active:scale-95 flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                Salvar URLs & Sincronizar Agora
+            <div class="flex flex-wrap items-center gap-2.5">
+              <button onclick="importarJSONPlanejamento()" id="btn-importar-json" class="px-5 py-2.5 rounded-xl bg-ibns-navy hover:bg-ibns-blue text-white text-xs font-bold shadow-sm transition active:scale-95 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                Processar & Salvar no Firebase
+              </button>
+              <label class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer transition flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                Carregar Arquivo .json
+                <input type="file" id="json-file-input" accept=".json" class="hidden" onchange="carregarArquivoJSON(event)">
+              </label>
+              <button onclick="preencherExemploJSON()" class="px-3.5 py-2 rounded-xl text-xs font-semibold text-sky-700 bg-sky-50 hover:bg-sky-100 transition">
+                Exemplo de JSON
               </button>
             </div>
+            <div id="json-import-log" class="hidden p-3 rounded-2xl text-xs font-medium"></div>
           </div>
 
-          <!-- Aba 3: Modelo de Planilha & Backup JSON -->
-          <div id="sheets-tab-modelo" class="sheets-tab-content hidden my-3">
+          <!-- Aba 2: Holyrics Online (Relay Web) -->
+          <div id="integracao-tab-holyrics" class="integracao-tab-content hidden space-y-3 my-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Holyrics API Key (Header `api_key`)</label>
+                <input type="text" id="holyrics-api-key" placeholder="Insira o api_key do plano Advanced..." class="w-full text-xs font-mono p-2.5 rounded-xl border border-slate-200 bg-white focus:border-ibns-blue focus:ring-2 focus:ring-sky-100 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Holyrics Token (Parâmetro `token`)</label>
+                <input type="text" id="holyrics-token" placeholder="Insira o token gerado nas permissões..." class="w-full text-xs font-mono p-2.5 rounded-xl border border-slate-200 bg-white focus:border-ibns-blue focus:ring-2 focus:ring-sky-100 outline-none">
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2.5 pt-1">
+              <button onclick="testarConexaoHolyrics()" id="btn-testar-holyrics" class="px-4 py-2.5 rounded-xl bg-ibns-navy hover:bg-ibns-blue text-white text-xs font-bold transition active:scale-95 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                Testar Conexão Holyrics
+              </button>
+              <button onclick="sincronizarRepertorioHolyrics()" id="btn-sync-holyrics-repertorio" class="px-4 py-2.5 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-200 text-ibns-blue text-xs font-semibold transition active:scale-95 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>
+                Puxar Repertório da Playlist Ativa
+              </button>
+            </div>
+            <div id="holyrics-status-card" class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
+              <div class="flex items-center gap-2 font-semibold text-slate-700">
+                <span id="holyrics-status-indicator" class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span id="holyrics-status-msg">Holyrics Relay ativo e configurado com plano Advanced.</span>
+              </div>
+              <div id="holyrics-live-preview" class="hidden mt-2 pt-2 border-t border-slate-200/60 font-mono text-[11px] text-slate-600"></div>
+            </div>
+          </div>
+
+          <!-- Aba 3: Backup & Modelo de Planejamento -->
+          <div id="integracao-tab-backup" class="integracao-tab-content hidden my-3">
             <div class="flex flex-wrap items-center gap-3">
               <button onclick="downloadModeloJSON()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                Exportar Backup JSON
+                Exportar Backup Geral (JSON)
+              </button>
+              <button onclick="baixarTemplateCultoJSON()" class="px-4 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-200 text-ibns-blue text-xs font-semibold transition flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Baixar Template Canônico de Culto (JSON)
               </button>
               <label class="px-4 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-200 text-ibns-blue text-xs font-semibold cursor-pointer transition flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                Importar Backup JSON
+                Restaurar Backup JSON
                 <input type="file" id="json-file" accept=".json" class="hidden" onchange="importJSON(event)">
               </label>
-            </div>
-          </div>
-
-          <!-- Status da Sincronização -->
-          <div id="sheets-status" class="hidden mt-3 p-3 rounded-2xl text-xs font-medium"></div>
-
-          <!-- Painel de Log de Importação -->
-          <div id="sheets-import-log-wrapper" class="hidden mt-3 pt-3 border-t border-slate-100">
-            <button onclick="toggleImportLogPanel()" class="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-              Ver Log Detalhado de Importação
-            </button>
-            <div id="sheets-import-log-panel" class="hidden mt-2 p-3 bg-slate-50 rounded-2xl border border-slate-200 max-h-60 overflow-y-auto text-[11px] font-mono text-slate-700">
-              <div id="import-log-list"></div>
             </div>
           </div>
         </div>
@@ -451,28 +455,43 @@
           <div id="form-alert" class="hidden mb-4 p-3 rounded-xl text-xs font-medium"></div>
 
           <!-- Campos Básicos do Evento -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1.5">Data</label>
-              <input type="date" id="f-data" class="w-full text-xs font-medium p-2.5 rounded-xl border border-slate-200 bg-white focus:border-ibns-blue focus:ring-2 focus:ring-sky-100 outline-none">
+              <input type="date" id="f-data" class="w-full text-xs font-medium p-2.5 rounded-xl border border-slate-200 bg-white focus:border-ibns-blue focus:ring-2 focus:ring-sky-100 outline-none" onchange="sugerirTemplatePorData(this.value)">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Horário</label>
-              <input type="time" id="f-hora" value="19:00" class="w-full text-xs font-medium p-2.5 rounded-xl border border-slate-200 bg-white focus:border-ibns-blue focus:ring-2 focus:ring-sky-100 outline-none">
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Horário de Início</label>
+              <input type="time" id="f-hora" value="10:00" class="w-full text-xs font-medium p-2.5 rounded-xl border border-slate-200 bg-white focus:border-ibns-blue focus:ring-2 focus:ring-sky-100 outline-none" onchange="recalcularHorariosAdmin()">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Tipo de Evento</label>
-              <select id="f-tipo" class="w-full text-xs font-medium p-2.5 rounded-xl border border-slate-200 bg-white focus:border-ibns-blue focus:ring-2 focus:ring-sky-100 outline-none">
-                <option value="Culto da Família">Culto da Família</option>
-                <option value="Culto de Santa Ceia">Culto de Santa Ceia</option>
-                <option value="Culto de Oração e Doutrina">Culto de Oração e Doutrina</option>
-                <option value="Culto de Jovens">Culto de Jovens</option>
-                <option value="Culto Especial">Culto Especial</option>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Template Litúrgico</label>
+              <select id="f-template" class="w-full text-xs font-medium p-2.5 rounded-xl border border-slate-200 bg-white focus:border-ibns-blue focus:ring-2 focus:ring-sky-100 outline-none" onchange="aplicarTemplateSelecionado(this.value)">
+                <option value="culto_regular" selected>Culto Regular (Domingos - 10h)</option>
+                <option value="santa_ceia">Santa Ceia (1º Domingo - 10h)</option>
+                <option value="siao_kids">Sião Kids (4º Domingo - 10h)</option>
+                <option value="mini_vigilia">Mini Vigília (Sextas - 19h30)</option>
+                <option value="">Personalizado (Vazio)</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Tema / Série</label>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Tipo do Culto / Rótulo</label>
+              <input type="text" id="f-tipo" value="Culto da Família" class="w-full text-xs font-medium p-2.5 rounded-xl border border-slate-200 bg-white focus:border-ibns-blue focus:ring-2 focus:ring-sky-100 outline-none">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Tema do Culto</label>
               <input type="text" id="f-tema" placeholder="Ex: Amigos para Sempre" class="w-full text-xs font-medium p-2.5 rounded-xl border border-slate-200 bg-white focus:border-ibns-blue focus:ring-2 focus:ring-sky-100 outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Série do Mês (Opcional)</label>
+              <input type="text" id="f-serie" placeholder="Ex: João 15.14-16" class="w-full text-xs font-medium p-2.5 rounded-xl border border-slate-200 bg-white focus:border-ibns-blue focus:ring-2 focus:ring-sky-100 outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Pregador (Controle Interno)</label>
+              <input type="text" id="f-pregador" placeholder="Ex: Pr. Fábio Félix" class="w-full text-xs font-medium p-2.5 rounded-xl border border-slate-200 bg-white focus:border-ibns-blue focus:ring-2 focus:ring-sky-100 outline-none">
             </div>
           </div>
 
@@ -492,7 +511,7 @@
             <div class="flex items-center justify-between mb-3">
               <div>
                 <h4 class="text-sm font-bold text-slate-900 flex items-center gap-2">
-                  <span>Ordem do Culto (Run Sheet)</span>
+                  <span>Ordem do Culto</span>
                   <span id="ordem-total-min" class="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-semibold tabular">0 min</span>
                 </h4>
                 <p class="text-[11px] text-slate-400">Arraste os itens para reordenar a sequência litúrgica</p>
@@ -761,7 +780,95 @@
 
   <!-- SCRIPT 2: Código Principal da Aplicação e Interações -->
   <script>
+    // ======== TEMPLATES LITÚRGICOS OFICIAIS IBNS ========
+    const IBNS_TEMPLATES = {
+      culto_regular: {
+        nome: "Culto Regular (Domingos)",
+        hora_padrao: "10:00",
+        tipo: "Culto da Família",
+        itens: [
+          { etapa: "Música 1 (Entrada)", min: 5, tipo: "musica", musica: null },
+          { etapa: "Boas-vindas, Leitura Bíblica e Oração", min: 5, tipo: "liturgia", musica: null },
+          { etapa: "Louvor 1", min: 7, tipo: "musica", musica: null },
+          { etapa: "Louvor 2 — Dízimos e Ofertas", min: 7, tipo: "musica", musica: null },
+          { etapa: "Louvor 3", min: 7, tipo: "musica", musica: null },
+          { etapa: "Oração de Transição", min: 3, tipo: "oracao", musica: null },
+          { etapa: "Mensagem", min: 40, tipo: "mensagem", musica: null },
+          { etapa: "Avisos", min: 5, tipo: "aviso", musica: null },
+          { etapa: "Louvor Final", min: 5, tipo: "musica", musica: null },
+          { etapa: "Bênção Apostólica", min: 3, tipo: "bencao", musica: null },
+          { etapa: "Encerramento", min: 2, tipo: "encerramento", musica: null }
+        ]
+      },
+      santa_ceia: {
+        nome: "Santa Ceia (1º Domingo)",
+        hora_padrao: "10:00",
+        tipo: "Culto de Santa Ceia",
+        itens: [
+          { etapa: "Música 1 (Entrada)", min: 5, tipo: "musica", musica: null },
+          { etapa: "Boas-vindas, Leitura Bíblica e Oração", min: 5, tipo: "liturgia", musica: null },
+          { etapa: "Louvor 1", min: 7, tipo: "musica", musica: null },
+          { etapa: "Louvor 2 — Dízimos e Ofertas", min: 7, tipo: "musica", musica: null },
+          { etapa: "Louvor 3", min: 7, tipo: "musica", musica: null },
+          { etapa: "Oração de Transição", min: 3, tipo: "oracao", musica: null },
+          { etapa: "Mensagem", min: 40, tipo: "mensagem", musica: null },
+          { etapa: "Momento de Santa Ceia (com música)", min: 10, tipo: "ceia", musica: null },
+          { etapa: "Avisos", min: 5, tipo: "aviso", musica: null },
+          { etapa: "Louvor Final", min: 5, tipo: "musica", musica: null },
+          { etapa: "Bênção Apostólica", min: 3, tipo: "bencao", musica: null },
+          { etapa: "Encerramento", min: 2, tipo: "encerramento", musica: null }
+        ]
+      },
+      siao_kids: {
+        nome: "Sião Kids (4º Domingo)",
+        hora_padrao: "10:00",
+        tipo: "Celebração com Sião Kids",
+        itens: [
+          { etapa: "Música 1 (Entrada)", min: 5, tipo: "musica", musica: null },
+          { etapa: "Boas-vindas, Leitura Bíblica e Oração", min: 5, tipo: "liturgia", musica: null },
+          { etapa: "Louvor 1", min: 7, tipo: "musica", musica: null },
+          { etapa: "Louvor 2 — Dízimos e Ofertas", min: 7, tipo: "musica", musica: null },
+          { etapa: "Louvor 3", min: 7, tipo: "musica", musica: null },
+          { etapa: "Oração de Transição", min: 3, tipo: "oracao", musica: null },
+          { etapa: "Mensagem", min: 40, tipo: "mensagem", musica: null },
+          { etapa: "Momento Especial — Sião Kids", min: 10, tipo: "especial", musica: null },
+          { etapa: "Avisos", min: 5, tipo: "aviso", musica: null },
+          { etapa: "Louvor Final", min: 5, tipo: "musica", musica: null },
+          { etapa: "Bênção Apostólica", min: 3, tipo: "bencao", musica: null },
+          { etapa: "Encerramento", min: 2, tipo: "encerramento", musica: null }
+        ]
+      },
+      mini_vigilia: {
+        nome: "Mini Vigília",
+        hora_padrao: "19:30",
+        tipo: "Mini Vigília",
+        itens: [
+          { etapa: "Recepção — Coffee Break", min: 30, tipo: "liturgia", musica: null },
+          { etapa: "Música 1", min: 5, tipo: "musica", musica: null },
+          { etapa: "Boas-vindas, Leitura Bíblica e Oração", min: 5, tipo: "liturgia", musica: null },
+          { etapa: "Música 2", min: 5, tipo: "musica", musica: null },
+          { etapa: "Música 3", min: 5, tipo: "musica", musica: null },
+          { etapa: "Mensagem", min: 30, tipo: "mensagem", musica: null },
+          { etapa: "Momento de Oração", min: 10, tipo: "oracao", musica: null },
+          { etapa: "Testemunho", min: 10, tipo: "especial", musica: null },
+          { etapa: "Intervalo — Coffee Break", min: 15, tipo: "liturgia", musica: null },
+          { etapa: "Música 4", min: 5, tipo: "musica", musica: null },
+          { etapa: "Quiz Bíblico", min: 20, tipo: "especial", musica: null },
+          { etapa: "Momento de Oração", min: 10, tipo: "oracao", musica: null },
+          { etapa: "Avisos Finais", min: 3, tipo: "aviso", musica: null },
+          { etapa: "Encerramento e Bênção", min: 3, tipo: "bencao", musica: null },
+          { etapa: "Música 5", min: 5, tipo: "musica", musica: null }
+        ]
+      }
+    };
+    window.IBNS_TEMPLATES = IBNS_TEMPLATES;
+
     // ======== ESTADO GLOBAL ========
+    const DEFAULT_HOLYRICS_API_KEY = 'HXHSJKJuL5hDxHoxCYOnuUmtW1sqSLONOPWFDaaj6nbJqJPfAcIN8Q3KMRgiu8Lc';
+    const DEFAULT_HOLYRICS_TOKEN = '92UDttLU8196OFX5';
+    let holyricsPollingTimer = null;
+    window.holyricsCurrentText = '';
+    window.visaoEquipeAtiva = false;
     const SENHA = '0573';
     let eventos = [];
     let checklist = {};
@@ -914,6 +1021,95 @@
       }, timeout);
     }
 
+    function getTipoIcon(tipo) {
+      switch (tipo) {
+        case 'musica': return '🎵';
+        case 'liturgia': return '📖';
+        case 'oracao': return '🙏';
+        case 'mensagem': return '🎤';
+        case 'aviso': return '📢';
+        case 'bencao': return '✝️';
+        case 'encerramento': return '🏁';
+        case 'ceia': return '🍞';
+        case 'especial': return '⭐';
+        default: return '✦';
+      }
+    }
+
+    function calcularHorarios(horaInicio, itens) {
+      if (!horaInicio || typeof horaInicio !== 'string') horaInicio = '10:00';
+      let [h, m] = horaInicio.split(':').map(x => parseInt(x, 10) || 0);
+      if (isNaN(h)) h = 10;
+      if (isNaN(m)) m = 0;
+
+      return (itens || []).map(item => {
+        const hora = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        const duracao = parseInt(item.min, 10) || 5;
+        m += duracao;
+        h = (h + Math.floor(m / 60)) % 24;
+        m = m % 60;
+        return { ...item, hora };
+      });
+    }
+
+    function recalcularHorariosAdmin() {
+      const hora = document.getElementById('f-hora')?.value || '10:00';
+      ordemItems = calcularHorarios(hora, ordemItems);
+      renderOrdemAdmin();
+    }
+
+    function sugerirTemplatePorData(dataStr) {
+      if (!dataStr) return;
+      const d = new Date(dataStr + 'T12:00:00');
+      const diaSemana = d.getDay(); // 0 = Domingo, 5 = Sexta
+      const diaMes = d.getDate();
+
+      const tSelect = document.getElementById('f-template');
+      const hInput = document.getElementById('f-hora');
+      const tipoInput = document.getElementById('f-tipo');
+
+      if (diaSemana === 0) { // Domingo
+        if (hInput) hInput.value = '10:00';
+        if (diaMes <= 7) {
+          if (tSelect) tSelect.value = 'santa_ceia';
+          if (tipoInput) tipoInput.value = 'Culto de Santa Ceia';
+          aplicarTemplateSelecionado('santa_ceia');
+        } else if (diaMes >= 22 && diaMes <= 28) {
+          if (tSelect) tSelect.value = 'siao_kids';
+          if (tipoInput) tipoInput.value = 'Celebração com Sião Kids';
+          aplicarTemplateSelecionado('siao_kids');
+        } else {
+          if (tSelect) tSelect.value = 'culto_regular';
+          if (tipoInput) tipoInput.value = 'Culto da Família';
+          aplicarTemplateSelecionado('culto_regular');
+        }
+      } else if (diaSemana === 5 && diaMes >= 24) { // Sexta final
+        if (tSelect) tSelect.value = 'mini_vigilia';
+        if (hInput) hInput.value = '19:30';
+        if (tipoInput) tipoInput.value = 'Mini Vigília';
+        aplicarTemplateSelecionado('mini_vigilia');
+      }
+    }
+
+    function aplicarTemplateSelecionado(templateKey) {
+      if (!templateKey || !IBNS_TEMPLATES[templateKey]) {
+        ordemItems = [];
+        renderOrdemAdmin();
+        return;
+      }
+      const t = IBNS_TEMPLATES[templateKey];
+      const hInput = document.getElementById('f-hora');
+      const tipoInput = document.getElementById('f-tipo');
+
+      if (hInput && t.hora_padrao) hInput.value = t.hora_padrao;
+      if (tipoInput && t.tipo) tipoInput.value = t.tipo;
+
+      const horaInicio = (hInput ? hInput.value : null) || t.hora_padrao || '10:00';
+      const rawItens = JSON.parse(JSON.stringify(t.itens));
+      ordemItems = calcularHorarios(horaInicio, rawItens);
+      renderOrdemAdmin();
+    }
+
     // Formulário do Evento
     function showEventForm(open = true) {
       const f = document.getElementById('event-form');
@@ -928,19 +1124,17 @@
 
     function initAdminForm() {
       document.getElementById('f-data').value = '';
-      document.getElementById('f-hora').value = '19:00';
+      document.getElementById('f-hora').value = '10:00';
       document.getElementById('f-tipo').value = 'Culto da Família';
       document.getElementById('f-tema').value = '';
+      if (document.getElementById('f-serie')) document.getElementById('f-serie').value = '';
+      if (document.getElementById('f-template')) document.getElementById('f-template').value = 'culto_regular';
       if (document.getElementById('f-pregador')) document.getElementById('f-pregador').value = '';
       if (document.getElementById('f-dirigente')) document.getElementById('f-dirigente').value = '';
-      ordemItems = [
-        { etapa: 'Prelúdio Instrumental', min: 5, responsavelIndex: null },
-        { etapa: 'Oração Inicial', min: 5, responsavelIndex: null },
-        { etapa: 'Cânticos & Louvor', min: 20, responsavelIndex: null },
-        { etapa: 'Avisos da Semana', min: 10, responsavelIndex: null },
-        { etapa: 'Mensagem Pastoral', min: 40, responsavelIndex: null },
-        { etapa: 'Oração Final & Bênção', min: 5, responsavelIndex: null }
-      ];
+      
+      const raw = JSON.parse(JSON.stringify(IBNS_TEMPLATES.culto_regular.itens));
+      ordemItems = calcularHorarios('10:00', raw);
+
       escalaItems = [
         { funcao: 'Dirigente', nome: '' },
         { funcao: 'Pregador', nome: '' },
@@ -970,42 +1164,69 @@
       if (totalEl) totalEl.textContent = formatMin(totalMin);
 
       if (!ordemItems.length) {
-        list.innerHTML = '<div class="p-6 text-center text-xs text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200">Nenhum momento litúrgico configurado. Clique em "Adicionar Momento".</div>';
+        list.innerHTML = '<div class="p-6 text-center text-xs text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200">Nenhum momento litúrgico configurado. Clique em "Adicionar Momento" ou selecione um template.</div>';
         return;
       }
 
-      list.innerHTML = ordemItems.map((item, i) => `
-        <div class="drag-item flex items-center gap-2 p-2.5 bg-white rounded-2xl border border-slate-200/90 shadow-sm transition hover:border-sky-300" draggable="true" data-index="${i}">
-          <div class="drag-handle cursor-grab p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 touch-none">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path></svg>
+      list.innerHTML = ordemItems.map((item, i) => {
+        const isMusica = item.tipo === 'musica' || item.musica;
+        return `
+        <div class="drag-item flex flex-col gap-2 p-3 bg-white rounded-2xl border border-slate-200/90 shadow-sm transition hover:border-sky-300" draggable="true" data-index="${i}">
+          <div class="flex items-center gap-2">
+            <div class="drag-handle cursor-grab p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 touch-none">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path></svg>
+            </div>
+            <span class="w-6 h-6 rounded-lg bg-slate-100 text-slate-600 font-bold text-xs flex items-center justify-center shrink-0 tabular">#${i+1}</span>
+            <span class="text-xs font-mono font-semibold text-ibns-blue bg-sky-50 px-2 py-0.5 rounded-md tabular shrink-0">${item.hora || '10:00'}</span>
+            <span class="text-sm shrink-0">${getTipoIcon(item.tipo)}</span>
+            <input type="text" value="${esc(item.etapa)}" placeholder="Nome do momento..." class="flex-1 min-w-0 text-xs sm:text-sm font-medium text-slate-800 bg-transparent border-none outline-none focus:bg-slate-50 px-2 py-1 rounded-lg" onchange="ordemItems[${i}].etapa=this.value">
+            
+            <div class="flex items-center gap-1 shrink-0">
+              <input type="number" min="1" value="${item.min || 5}" class="w-14 text-center text-xs font-bold text-ibns-navy bg-slate-50 border border-slate-200 rounded-lg py-1 px-1.5 focus:border-ibns-blue outline-none tabular" onchange="ordemItems[${i}].min=parseInt(this.value)||5; recalcularHorariosAdmin();">
+              <span class="text-[11px] text-slate-400">min</span>
+            </div>
+
+            <select class="hidden sm:block text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded-lg p-1.5 max-w-[120px] outline-none" onchange="ordemItems[${i}].tipo=this.value; renderOrdemAdmin();">
+              <option value="liturgia" ${item.tipo==='liturgia'?'selected':''}>📖 Liturgia</option>
+              <option value="musica" ${item.tipo==='musica'?'selected':''}>🎵 Música</option>
+              <option value="oracao" ${item.tipo==='oracao'?'selected':''}>🙏 Oração</option>
+              <option value="mensagem" ${item.tipo==='mensagem'?'selected':''}>🎤 Palavra</option>
+              <option value="ceia" ${item.tipo==='ceia'?'selected':''}>🍞 Ceia</option>
+              <option value="especial" ${item.tipo==='especial'?'selected':''}>⭐ Especial</option>
+              <option value="aviso" ${item.tipo==='aviso'?'selected':''}>📢 Avisos</option>
+              <option value="bencao" ${item.tipo==='bencao'?'selected':''}>✝️ Bênção</option>
+              <option value="encerramento" ${item.tipo==='encerramento'?'selected':''}>🏁 Fim</option>
+            </select>
+
+            <button onclick="removeOrdem(${i})" class="w-7 h-7 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition shrink-0" title="Remover">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
           </div>
-          <span class="w-6 h-6 rounded-lg bg-slate-100 text-slate-600 font-bold text-xs flex items-center justify-center shrink-0 tabular">#${i+1}</span>
-          <input type="text" value="${esc(item.etapa)}" placeholder="Nome do momento..." class="flex-1 min-w-0 text-xs sm:text-sm font-medium text-slate-800 bg-transparent border-none outline-none focus:bg-slate-50 px-2 py-1 rounded-lg" onchange="ordemItems[${i}].etapa=this.value">
-          <div class="flex items-center gap-1 shrink-0">
-            <input type="number" min="1" value="${item.min || 5}" class="w-14 text-center text-xs font-bold text-ibns-navy bg-slate-50 border border-slate-200 rounded-lg py-1 px-1.5 focus:border-ibns-blue outline-none tabular" onchange="ordemItems[${i}].min=parseInt(this.value)||5; renderOrdemAdmin();">
-            <span class="text-[11px] text-slate-400">min</span>
+
+          ${isMusica ? `
+          <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 text-xs pl-8">
+            <span class="text-[10px] font-bold text-sky-700 uppercase bg-sky-50 px-2 py-0.5 rounded">Repertório:</span>
+            <input type="text" placeholder="Tom (ex: C, Am, G)" value="${esc(item.musica?.tom || '')}" class="w-20 px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-ibns-navy outline-none" onchange="if(!ordemItems[${i}].musica) ordemItems[${i}].musica={}; ordemItems[${i}].musica.tom=this.value;">
+            <input type="number" placeholder="BPM" value="${item.musica?.bpm || ''}" class="w-16 px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none" onchange="if(!ordemItems[${i}].musica) ordemItems[${i}].musica={}; ordemItems[${i}].musica.bpm=parseInt(this.value)||0;">
+            <input type="text" placeholder="Link YouTube (ensaio)" value="${esc(item.musica?.youtube || '')}" class="flex-1 min-w-[150px] px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none" onchange="if(!ordemItems[${i}].musica) ordemItems[${i}].musica={}; ordemItems[${i}].musica.youtube=this.value;">
+            <input type="text" placeholder="Link Cifra" value="${esc(item.musica?.cifra || '')}" class="flex-1 min-w-[140px] px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none" onchange="if(!ordemItems[${i}].musica) ordemItems[${i}].musica={}; ordemItems[${i}].musica.cifra=this.value;">
           </div>
-          <select class="hidden sm:block text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded-lg p-1.5 max-w-[140px] outline-none" onchange="ordemItems[${i}].responsavelIndex = this.value === '' ? null : parseInt(this.value)">
-            <option value="">Responsável...</option>
-            ${escalaItems.map((e, idx) => `<option value="${idx}" ${item.responsavelIndex === idx ? 'selected' : ''}>${esc(e.nome || e.funcao)}</option>`).join('')}
-          </select>
-          <button onclick="removeOrdem(${i})" class="w-7 h-7 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition shrink-0" title="Remover">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-          </button>
+          ` : ''}
         </div>
-      `).join('');
+        `;
+      }).join('');
 
       setupDragAndDrop();
     }
 
     function addOrdemItem() {
-      ordemItems.push({ etapa: '', min: 5, responsavelIndex: null });
-      renderOrdemAdmin();
+      ordemItems.push({ etapa: '', min: 5, tipo: 'liturgia', responsavelIndex: null, musica: null });
+      recalcularHorariosAdmin();
     }
 
     function removeOrdem(i) {
       ordemItems.splice(i, 1);
-      renderOrdemAdmin();
+      recalcularHorariosAdmin();
     }
 
     // Escala no Admin
@@ -1020,8 +1241,8 @@
 
       list.innerHTML = escalaItems.map((item, i) => `
         <div class="flex items-center gap-2 p-2 bg-white rounded-2xl border border-slate-200/90 shadow-sm transition hover:border-sky-300">
-          <input type="text" value="${esc(item.funcao)}" placeholder="Ministério / Cargo (ex: Louvor, Pregador)" class="w-1/3 min-w-[110px] text-xs font-semibold text-ibns-navy bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 focus:border-ibns-blue outline-none" onchange="escalaItems[${i}].funcao=this.value; renderOrdemAdmin();">
-          <input type="text" value="${esc(item.nome)}" placeholder="Nome do Voluntário..." class="flex-1 min-w-0 text-xs sm:text-sm font-medium text-slate-800 bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 focus:border-ibns-blue outline-none" onchange="escalaItems[${i}].nome=this.value; renderOrdemAdmin();">
+          <input type="text" value="${esc(item.funcao)}" placeholder="Ministério / Cargo (ex: Louvor, Pregador)" class="w-1/3 min-w-[110px] text-xs font-semibold text-ibns-navy bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 focus:border-ibns-blue outline-none" onchange="escalaItems[${i}].funcao=this.value;">
+          <input type="text" value="${esc(item.nome)}" placeholder="Nome do Voluntário..." class="flex-1 min-w-0 text-xs sm:text-sm font-medium text-slate-800 bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 focus:border-ibns-blue outline-none" onchange="escalaItems[${i}].nome=this.value;">
           <button onclick="removeEscala(${i})" class="w-8 h-8 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition shrink-0" title="Remover">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
           </button>
@@ -1032,21 +1253,20 @@
     function addEscalaItem() {
       escalaItems.push({ funcao: '', nome: '' });
       renderEscalaAdmin();
-      renderOrdemAdmin();
     }
 
     function removeEscala(i) {
       escalaItems.splice(i, 1);
       renderEscalaAdmin();
-      renderOrdemAdmin();
     }
 
     // Salvar e Editar Evento
     function salvarEvento() {
       const data = document.getElementById('f-data').value;
-      const hora = document.getElementById('f-hora').value || '19:00';
+      const hora = document.getElementById('f-hora').value || '10:00';
       const tipo = document.getElementById('f-tipo').value;
       const tema = document.getElementById('f-tema').value.trim();
+      const serie = document.getElementById('f-serie') ? document.getElementById('f-serie').value.trim() : '';
       const pregador = document.getElementById('f-pregador') ? document.getElementById('f-pregador').value.trim() : '';
       const dirigente = document.getElementById('f-dirigente') ? document.getElementById('f-dirigente').value.trim() : '';
 
@@ -1059,19 +1279,26 @@
       const editIndex = form.dataset.editIndex;
       const editEventoId = form.dataset.editEventoId;
 
+      const rawOrdem = ordemItems.map(x => ({
+        etapa: x.etapa,
+        min: parseInt(x.min) || 5,
+        tipo: x.tipo || 'liturgia',
+        musica: x.musica || null,
+        responsavel: x.responsavelIndex != null && escalaItems[x.responsavelIndex] ? (escalaItems[x.responsavelIndex].nome || escalaItems[x.responsavelIndex].funcao) : (x.responsavel || '')
+      }));
+
+      const ordemComHorarios = calcularHorarios(hora, rawOrdem);
+
       const eventoObj = {
         data,
         hora,
         tipo,
         tema,
+        serie,
         pregador,
         dirigente,
         evento_id: editEventoId || generateEventoId(data, tipo, hora),
-        ordem: ordemItems.map(x => ({
-          etapa: x.etapa,
-          min: parseInt(x.min) || 5,
-          responsavel: x.responsavelIndex != null && escalaItems[x.responsavelIndex] ? (escalaItems[x.responsavelIndex].nome || escalaItems[x.responsavelIndex].funcao) : (x.responsavel || '')
-        })),
+        ordem: ordemComHorarios,
         escala: escalaItems.filter(x => x.funcao || x.nome)
       };
 
@@ -1099,15 +1326,19 @@
       if (!ev) return;
 
       document.getElementById('f-data').value = ev.data || '';
-      document.getElementById('f-hora').value = ev.hora || '19:00';
+      document.getElementById('f-hora').value = ev.hora || '10:00';
       document.getElementById('f-tipo').value = ev.tipo || 'Culto da Família';
       document.getElementById('f-tema').value = ev.tema || '';
+      if (document.getElementById('f-serie')) document.getElementById('f-serie').value = ev.serie || '';
       if (document.getElementById('f-pregador')) document.getElementById('f-pregador').value = ev.pregador || '';
       if (document.getElementById('f-dirigente')) document.getElementById('f-dirigente').value = ev.dirigente || '';
 
       ordemItems = (ev.ordem || []).map(x => ({
         etapa: x.etapa,
         min: x.min || 5,
+        hora: x.hora || '',
+        tipo: x.tipo || 'liturgia',
+        musica: x.musica || null,
         responsavel: x.responsavel || '',
         responsavelIndex: null
       }));
@@ -1146,7 +1377,7 @@
       if (!list) return;
 
       const mesFilter = document.getElementById('filter-mes') ? document.getElementById('filter-mes').value : '';
-      const buscaFilter = document.getElementById('filter-busca') ? document.getElementById('filter-busca').value.toLowerCase().trim() : '';
+      const _fbEl = document.getElementById('filter-busca'); const buscaFilter = (_fbEl && _fbEl.value) ? _fbEl.value.toLowerCase().trim() : '';
 
       const countEl = document.getElementById('eventos-count');
       if (countEl) countEl.textContent = `${window.eventos.length} evento${window.eventos.length !== 1 ? 's' : ''}`;
@@ -1335,19 +1566,43 @@
           </div>
         </div>
 
-        <!-- LISTA RUN SHEET (ORDEM DE CULTO INTERATIVA) -->
+        <!-- LISTA ORDEM DE CULTO (INTERATIVA COM OPÇÃO VISÃO DA EQUIPE) -->
         <div class="glass-card rounded-3xl p-5 sm:p-7 shadow-apple">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-100">
             <div>
-              <h3 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">Run Sheet Litúrgico</h3>
-              <p class="text-xs text-slate-500">Marque as etapas em tempo real no púlpito ou reordene se necessário</p>
+              <div class="flex items-center gap-2">
+                <h3 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">Ordem do Culto</h3>
+                <span id="badge-visao-equipe" class="${window.visaoEquipeAtiva ? 'inline-flex' : 'hidden'} text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-ibns-navy text-white">Modo Equipe</span>
+              </div>
+              <p class="text-xs text-slate-500">Acompanhe a liturgia em tempo real no púlpito ou navegue nos momentos</p>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
+              <button id="btn-visao-equipe" onclick="toggleVisaoEquipe()" class="px-3.5 py-1.5 rounded-xl border ${window.visaoEquipeAtiva ? 'border-ibns-blue bg-ibns-blue text-white shadow-sm' : 'border-sky-200 bg-sky-50/70 hover:bg-sky-100 text-ibns-blue'} text-xs font-semibold transition active:scale-95 flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>
+                <span>${window.visaoEquipeAtiva ? 'Visão Pública' : 'Visão da Equipe'}</span>
+              </button>
               <button onclick="toggleReorder()" class="px-3.5 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition active:scale-95 flex items-center gap-1.5">
                 <svg class="w-3.5 h-3.5 text-ibns-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
                 ${cultoReorderMode ? 'Concluir Edição' : 'Reordenar Itens'}
               </button>
             </div>
+          </div>
+
+          <!-- WIDGET HOLYRICS AO VIVO -->
+          <div id="holyrics-live-widget" class="hidden mb-4 p-3.5 bg-sky-50/80 rounded-2xl border border-sky-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <span class="flex h-3 w-3 relative">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+              </span>
+              <div>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-ibns-navy">Ao Vivo no Telão (Holyrics):</span>
+                <span id="holyrics-live-text" class="text-xs font-medium text-slate-800 ml-1.5">Aguardando projeção...</span>
+              </div>
+            </div>
+            <button onclick="atualizarHolyricsAoVivo(true)" class="self-start sm:self-auto text-[11px] text-sky-700 hover:text-sky-900 font-semibold flex items-center gap-1 underline underline-offset-2">
+              Atualizar
+            </button>
           </div>
 
           <!-- Banner de Aviso do Modo Reordenação -->
@@ -1391,31 +1646,55 @@
 
       container.innerHTML = items.map((item, idx) => {
         const isDone = checks[idx] || false;
+        const icon = getTipoIcon(item.tipo);
+        const hasMusica = item.musica && typeof item.musica === 'object';
+        const isCurrentLive = window.holyricsCurrentText && (
+          (hasMusica && window.holyricsCurrentText.toLowerCase().includes(item.musica.titulo?.toLowerCase())) ||
+          window.holyricsCurrentText.toLowerCase().includes(item.etapa.toLowerCase())
+        );
+
         return `
-          <div class="culto-ordem-item group flex items-center justify-between gap-3 p-3.5 rounded-2xl border transition-all duration-200 ${isDone ? 'bg-slate-50/80 border-slate-200/60 opacity-60' : 'bg-white border-slate-200/90 shadow-apple-card hover:border-sky-300'}" data-index="${idx}" ${cultoReorderMode ? 'draggable="true"' : ''}>
-            
-            <div class="flex items-center gap-3 min-w-0 flex-1">
-              ${cultoReorderMode ? `
-              <div class="culto-drag-handle cursor-grab p-1 text-slate-400 hover:text-slate-700 touch-none">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path></svg>
-              </div>` : ''}
+          <div class="culto-ordem-item group flex flex-col gap-2 p-3.5 rounded-2xl border transition-all duration-200 ${isCurrentLive ? 'border-ibns-blue ring-2 ring-sky-300 bg-sky-50/50' : isDone ? 'bg-slate-50/80 border-slate-200/60 opacity-60' : 'bg-white border-slate-200/90 shadow-apple-card hover:border-sky-300'}" data-index="${idx}" ${cultoReorderMode ? 'draggable="true"' : ''}>
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0 flex-1">
+                ${cultoReorderMode ? `
+                <div class="culto-drag-handle cursor-grab p-1 text-slate-400 hover:text-slate-700 touch-none">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path></svg>
+                </div>` : ''}
 
-              <button onclick="toggleCheck('${eventKey}', ${idx})" class="check-btn-pulse w-7 h-7 rounded-xl border-2 flex items-center justify-center shrink-0 transition ${isDone ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 hover:border-ibns-blue bg-white text-transparent'}">
-                <svg class="w-4 h-4 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-              </button>
+                <button onclick="toggleCheck('${eventKey}', ${idx})" class="check-btn-pulse w-7 h-7 rounded-xl border-2 flex items-center justify-center shrink-0 transition ${isDone ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 hover:border-ibns-blue bg-white text-transparent'}">
+                  <svg class="w-4 h-4 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                </button>
 
-              <span class="w-6 h-6 rounded-lg bg-slate-100 text-slate-500 font-bold text-xs flex items-center justify-center shrink-0 tabular">#${idx+1}</span>
+                <span class="w-6 h-6 rounded-lg bg-slate-100 text-slate-500 font-bold text-xs flex items-center justify-center shrink-0 tabular">#${idx+1}</span>
 
-              <div class="min-w-0 flex-1">
-                <h4 class="text-sm font-semibold text-slate-900 truncate ${isDone ? 'line-through text-slate-400' : ''}">${esc(item.etapa)}</h4>
-                ${item.responsavel ? `<p class="text-xs text-slate-500 font-medium truncate mt-0.5">${esc(item.responsavel)}</p>` : ''}
+                ${item.hora ? `<span class="text-xs font-mono font-semibold text-ibns-navy bg-slate-100 px-2 py-0.5 rounded-md tabular shrink-0">${item.hora}</span>` : ''}
+
+                <span class="text-sm shrink-0">${icon}</span>
+
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2">
+                    <h4 class="text-sm font-semibold text-slate-900 truncate ${isDone ? 'line-through text-slate-400' : ''}">${esc(item.etapa)}</h4>
+                    ${isCurrentLive ? '<span class="text-[10px] font-bold text-white bg-red-500 uppercase tracking-wider px-2 py-0.5 rounded-full animate-pulse">Ao Vivo</span>' : ''}
+                  </div>
+                  ${item.responsavel ? `<p class="text-xs text-slate-500 font-medium truncate mt-0.5">${esc(item.responsavel)}</p>` : ''}
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 shrink-0">
+                <span class="text-xs px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 font-semibold tabular">${item.min || 5} min</span>
               </div>
             </div>
 
-            <div class="flex items-center gap-2 shrink-0">
-              <span class="text-xs px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 font-semibold tabular">${item.min || 5} min</span>
+            <!-- VISÃO DA EQUIPE (REPERTÓRIO DETALHADO, TOM & LINKS) -->
+            ${window.visaoEquipeAtiva && hasMusica ? `
+            <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 text-xs pl-12 text-slate-600">
+              ${item.musica.tom ? `<span class="px-2 py-0.5 rounded-md bg-ibns-navy text-white font-bold text-[11px]">Tom: ${esc(item.musica.tom)}</span>` : ''}
+              ${item.musica.bpm ? `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-medium text-[11px] tabular">⏱️ ${item.musica.bpm} BPM</span>` : ''}
+              ${item.musica.youtube ? `<a href="${esc(item.musica.youtube)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-md bg-red-50 text-red-600 font-semibold text-[11px] hover:bg-red-100 flex items-center gap-1 transition">▶️ Ensaio (YouTube)</a>` : ''}
+              ${item.musica.cifra ? `<a href="${esc(item.musica.cifra)}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-semibold text-[11px] hover:bg-emerald-100 flex items-center gap-1 transition">🎸 Cifra</a>` : ''}
             </div>
-
+            ` : ''}
           </div>
         `;
       }).join('');
@@ -1433,13 +1712,11 @@
     }
 
     function toggleReorder() {
-      const evsNoDia = findEventsByDate(window.dataSelecionada);
-      const evento = findEventById(window.selectedEventoId) || evsNoDia[0];
-      if (!evento) return;
-
       cultoReorderMode = !cultoReorderMode;
       if (cultoReorderMode) {
-        cultoTempOrder = JSON.parse(JSON.stringify(evento.ordem || []));
+        const evsNoDia = findEventsByDate(window.dataSelecionada);
+        const evento = findEventById(window.selectedEventoId) || evsNoDia[0];
+        cultoTempOrder = evento && evento.ordem ? JSON.parse(JSON.stringify(evento.ordem)) : [];
       }
       renderCulto();
     }
@@ -1447,18 +1724,15 @@
     function saveCultoOrder() {
       const evsNoDia = findEventsByDate(window.dataSelecionada);
       const evento = findEventById(window.selectedEventoId) || evsNoDia[0];
-      if (!evento) return;
-
-      evento.ordem = cultoTempOrder;
-      cultoReorderMode = false;
-      window.fbSaveEventos();
-      showToast('Nova ordem litúrgica salva!', 'success');
-      renderCulto();
+      if (evento) {
+        evento.ordem = calcularHorarios(evento.hora || '10:00', cultoTempOrder);
+        window.fbSaveEventos();
+        cultoReorderMode = false;
+        showToast('Nova ordem salva com sucesso!', 'success');
+        renderCulto();
+      }
     }
 
-    // ========================================================
-    // ABA DE ESCALAS DE VOLUNTÁRIOS POR EVENTO
-    // ========================================================
     function renderEscala() {
       const container = document.getElementById('escala-display');
       if (!container) return;
@@ -1571,83 +1845,333 @@
     }
 
     // ========================================================
-    // INTEGRAÇÃO GOOGLE SHEETS & LOGS
+    // INTEGRAÇÃO LITÚRGICA, JSON & HOLYRICS RELAY (SPRINT 2)
     // ========================================================
-    function sheetsTabSwitch(tab, btn) {
-      document.querySelectorAll('.sheets-tab-content').forEach(x => x.classList.add('hidden'));
-      document.querySelectorAll('.sheets-tab').forEach(x => x.classList.remove('sheets-tab-active', 'bg-white', 'text-ibns-navy', 'shadow-sm'));
+    function integracaoTabSwitch(tab, btn) {
+      document.querySelectorAll('.integracao-tab-content').forEach(x => x.classList.add('hidden'));
+      document.querySelectorAll('.integracao-tab').forEach(x => x.classList.remove('integracao-tab-active', 'bg-white', 'text-ibns-navy', 'shadow-sm'));
       
-      const t = document.getElementById('sheets-tab-' + tab);
+      const t = document.getElementById('integracao-tab-' + tab);
       if (t) t.classList.remove('hidden');
-      if (btn) btn.classList.add('sheets-tab-active', 'bg-white', 'text-ibns-navy', 'shadow-sm');
+      if (btn) btn.classList.add('integracao-tab-active', 'bg-white', 'text-ibns-navy', 'shadow-sm');
     }
 
-    function updateSheetsStatus(type, msg) {
-      const s = document.getElementById('sheets-status');
-      if (!s) return;
-      s.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'bg-red-50', 'text-red-800', 'bg-sky-50', 'text-sky-800');
-      if (type === 'ok') s.classList.add('bg-emerald-50', 'text-emerald-800');
-      else if (type === 'err') s.classList.add('bg-red-50', 'text-red-800');
-      else s.classList.add('bg-sky-50', 'text-sky-800');
-      s.textContent = msg;
+    // Compatibilidade com chamadas anteriores de abas
+    function sheetsTabSwitch(tab, btn) {
+      integracaoTabSwitch(tab === 'url' ? 'holyrics' : tab === 'modelo' ? 'backup' : 'json', btn);
+    }
+    function updateSheetsStatus(type, msg) {}
+    async function saveAndLoadSheets() {}
+
+    function getHolyricsConfig() {
+      let apiKey = localStorage.getItem('ibns_holyrics_api_key');
+      let token = localStorage.getItem('ibns_holyrics_token');
+      if (!apiKey) {
+        apiKey = DEFAULT_HOLYRICS_API_KEY;
+        localStorage.setItem('ibns_holyrics_api_key', apiKey);
+      }
+      if (!token) {
+        token = DEFAULT_HOLYRICS_TOKEN;
+        localStorage.setItem('ibns_holyrics_token', token);
+      }
+      return { apiKey, token };
     }
 
-    async function saveAndLoadSheets() {
-      const urlEventos = document.getElementById('sheets-url-eventos').value.trim();
-      const urlOrdem = document.getElementById('sheets-url-ordem').value.trim();
-      const urlEscala = document.getElementById('sheets-url-escala').value.trim();
-
-      const config = { eventos: urlEventos, ordem: urlOrdem, escala: urlEscala };
-      window.fbSaveSheets(config);
-
-      updateSheetsStatus('loading', 'Carregando planilhas do Google Sheets...');
-
+    async function holyricsRequest(action, payload = {}) {
+      const { apiKey, token } = getHolyricsConfig();
+      if (!apiKey || !token) return null;
       try {
-        let count = 0;
-        if (urlEventos) {
-          const resp = await fetch(urlEventos);
-          const txt = await resp.text();
-          const rows = parseCSV(txt);
-          if (rows.length > 1) {
-            // Processa linhas de eventos (cabeçalho na linha 0)
-            const novos = [];
-            for (let i = 1; i < rows.length; i++) {
-              const r = rows[i];
-              if (!r[0]) continue;
-              novos.push({
-                data: r[0],
-                hora: r[1] || '19:00',
-                tipo: r[2] || 'Culto da Família',
-                tema: r[3] || '',
-                pregador: r[4] || '',
-                dirigente: r[5] || '',
-                evento_id: generateEventoId(r[0], r[2] || 'culto', r[1] || '19:00'),
-                ordem: [],
-                escala: []
-              });
-            }
-            if (novos.length) {
-              window.eventos = novos;
-              count = novos.length;
-            }
-          }
+        const url = `https://api.holyrics.com.br/request/${action}?token=${encodeURIComponent(token)}`;
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'api_key': apiKey
+          },
+          body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+        if (json.status === 'ok' && json.response_status === 'ok') {
+          return json.response;
         }
-
-        window.fbSaveEventos();
-        updateSheetsStatus('ok', `Sucesso! ${count} eventos sincronizados com a planilha.`);
-        showToast('Planilhas sincronizadas!', 'success');
-        renderEventosList();
-        renderCulto();
-      } catch(e) {
-        console.error(e);
-        updateSheetsStatus('err', 'Erro ao carregar Google Sheets: ' + e.message);
-        showToast('Falha na sincronização da planilha', 'error');
+        return null;
+      } catch (err) {
+        console.warn('[Holyrics API Error]:', err);
+        return null;
       }
     }
 
-    function toggleImportLogPanel() {
-      const p = document.getElementById('sheets-import-log-panel');
-      if (p) p.classList.toggle('hidden');
+    async function testarConexaoHolyrics() {
+      const keyInput = document.getElementById('holyrics-api-key');
+      const tokenInput = document.getElementById('holyrics-token');
+      const indicator = document.getElementById('holyrics-status-indicator');
+      const statusMsg = document.getElementById('holyrics-status-msg');
+      const preview = document.getElementById('holyrics-live-preview');
+
+      if (keyInput && keyInput.value.trim()) localStorage.setItem('ibns_holyrics_api_key', keyInput.value.trim());
+      if (tokenInput && tokenInput.value.trim()) localStorage.setItem('ibns_holyrics_token', tokenInput.value.trim());
+
+      if (statusMsg) statusMsg.textContent = 'Testando conexão com servidor Holyrics Relay...';
+      if (indicator) indicator.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse';
+
+      const resp = await holyricsRequest('GetCPInfo');
+      if (resp && resp.status === 'ok') {
+        if (indicator) indicator.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500';
+        if (statusMsg) statusMsg.textContent = 'Conexão ativa e autenticada com sucesso! (Plano Advanced)';
+        if (preview && resp.data) {
+          preview.classList.remove('hidden');
+          preview.textContent = 'Texto projetado agora: ' + (resp.data.text || '(Sem texto ativo no telão)');
+        }
+        showToast('Conectado ao Holyrics com sucesso!', 'success');
+      } else {
+        if (indicator) indicator.className = 'w-2.5 h-2.5 rounded-full bg-red-500';
+        if (statusMsg) statusMsg.textContent = 'Falha na conexão com Holyrics. Verifique api_key e token.';
+        showToast('Falha ao autenticar no Holyrics.', 'error');
+      }
+    }
+
+    async function sincronizarRepertorioHolyrics() {
+      showToast('Buscando playlist do LouveApp / Holyrics...', 'info');
+      const resp = await holyricsRequest('GetLyricsPlaylist');
+      if (!resp || !resp.data || !Array.isArray(resp.data) || !resp.data.length) {
+        showToast('Nenhuma música encontrada na playlist ativa do Holyrics.', 'error');
+        return;
+      }
+
+      const musicasHolyrics = resp.data;
+      let count = 0;
+
+      // Se o formulário de admin estiver aberto
+      if (!document.getElementById('event-form')?.classList.contains('hidden')) {
+        let mIdx = 0;
+        ordemItems.forEach(item => {
+          if (item.tipo === 'musica' && mIdx < musicasHolyrics.length) {
+            const hSong = musicasHolyrics[mIdx++];
+            item.etapa = `${item.etapa.split('—')[0].trim()} — ${hSong.title}`;
+            item.musica = {
+              titulo: hSong.title || '',
+              artista: hSong.artist || '',
+              tom: hSong.key || '',
+              bpm: hSong.bpm || 0,
+              youtube: hSong.streaming?.audio?.youtube ? (hSong.streaming.audio.youtube.startsWith('http') ? hSong.streaming.audio.youtube : `https://youtube.com/watch?v=${hSong.streaming.audio.youtube}`) : '',
+              cifra: hSong.extras?.Cifra || ''
+            };
+            count++;
+          }
+        });
+        renderOrdemAdmin();
+        showToast(`${count} músicas sincronizadas no formulário!`, 'success');
+        return;
+      }
+
+      // Sincroniza no evento atual selecionado
+      const ev = findEventById(window.selectedEventoId);
+      if (ev) {
+        let mIdx = 0;
+        (ev.ordem || []).forEach(item => {
+          if (item.tipo === 'musica' && mIdx < musicasHolyrics.length) {
+            const hSong = musicasHolyrics[mIdx++];
+            item.etapa = `${item.etapa.split('—')[0].trim()} — ${hSong.title}`;
+            item.musica = {
+              titulo: hSong.title || '',
+              artista: hSong.artist || '',
+              tom: hSong.key || '',
+              bpm: hSong.bpm || 0,
+              youtube: hSong.streaming?.audio?.youtube ? (hSong.streaming.audio.youtube.startsWith('http') ? hSong.streaming.audio.youtube : `https://youtube.com/watch?v=${hSong.streaming.audio.youtube}`) : '',
+              cifra: hSong.extras?.Cifra || ''
+            };
+            count++;
+          }
+        });
+        window.fbSaveEventos();
+        renderCulto();
+        showToast(`${count} músicas sincronizadas para este culto!`, 'success');
+      } else {
+        showToast('Nenhum culto selecionado para sincronizar.', 'error');
+      }
+    }
+
+    async function atualizarHolyricsAoVivo(mostrarToast = false) {
+      const resp = await holyricsRequest('GetCPInfo');
+      const widget = document.getElementById('holyrics-live-widget');
+      const textEl = document.getElementById('holyrics-live-text');
+
+      if (resp && resp.data && resp.data.text) {
+        window.holyricsCurrentText = resp.data.text.trim();
+        if (widget) widget.classList.remove('hidden');
+        if (textEl) {
+          const firstLine = window.holyricsCurrentText.split('\n')[0];
+          textEl.textContent = firstLine.length > 80 ? firstLine.slice(0, 80) + '...' : firstLine;
+          textEl.title = window.holyricsCurrentText;
+        }
+        if (mostrarToast) showToast('Telão sincronizado!', 'success');
+      } else {
+        window.holyricsCurrentText = '';
+        if (widget) widget.classList.add('hidden');
+        if (mostrarToast) showToast('Sem texto ativo no telão no momento.', 'info');
+      }
+    }
+
+    function toggleVisaoEquipe() {
+      window.visaoEquipeAtiva = !window.visaoEquipeAtiva;
+      renderCulto();
+    }
+
+    function importarJSONPlanejamento() {
+      const textarea = document.getElementById('json-import-input');
+      const logEl = document.getElementById('json-import-log');
+      const raw = (textarea ? textarea.value : '').trim();
+      if (!raw) {
+        showToast('Cole o JSON de planejamento no campo.', 'error');
+        return;
+      }
+
+      try {
+        const data = JSON.parse(raw);
+        const eventosParaImportar = Array.isArray(data) ? data : (data.eventos || (data.ordem ? [data] : []));
+        if (!eventosParaImportar.length) {
+          throw new Error('Nenhum evento válido encontrado no JSON.');
+        }
+
+        let importados = 0;
+        let musicasEncontradas = 0;
+
+        eventosParaImportar.forEach(ev => {
+          if (!ev.data) return;
+          const hora = ev.hora || '10:00';
+          const tipo = ev.tipo || 'Culto da Família';
+          const id = ev.evento_id || generateEventoId(ev.data, tipo, hora);
+
+          const ordemItens = (ev.ordem || []).map(o => {
+            const m = parseInt(o.min, 10) || 5;
+            let musicaObj = null;
+            if (o.musica && typeof o.musica === 'object') {
+              musicaObj = {
+                titulo: o.musica.titulo || '',
+                artista: o.musica.artista || '',
+                tom: o.musica.tom || '',
+                bpm: o.musica.bpm || 0,
+                youtube: o.musica.youtube || '',
+                cifra: o.musica.cifra || ''
+              };
+              musicasEncontradas++;
+            }
+            return {
+              etapa: o.etapa || 'Momento Litúrgico',
+              min: m,
+              tipo: o.tipo || (musicaObj ? 'musica' : 'liturgia'),
+              musica: musicaObj,
+              responsavel: o.responsavel || ''
+            };
+          });
+
+          const ordemComHoras = calcularHorarios(hora, ordemItens);
+
+          const eventoObj = {
+            data: ev.data,
+            hora: hora,
+            tipo: tipo,
+            tema: ev.tema || '',
+            serie: ev.serie || '',
+            serie_base: ev.serie_base || '',
+            texto_base: ev.texto_base || ev.texto_biblico || '',
+            pregador: ev.pregador || '',
+            dirigente: ev.dirigente || '',
+            evento_id: id,
+            ordem: ordemComHoras,
+            escala: ev.escala || []
+          };
+
+          const existIdx = window.eventos.findIndex(x => x.evento_id === id || (x.data === ev.data && x.hora === hora));
+          if (existIdx >= 0) {
+            window.eventos[existIdx] = eventoObj;
+          } else {
+            window.eventos.push(eventoObj);
+          }
+          importados++;
+        });
+
+        window.eventos.sort((a, b) => a.data.localeCompare(b.data));
+        window.fbSaveEventos();
+
+        if (logEl) {
+          logEl.classList.remove('hidden', 'bg-red-50', 'text-red-700');
+          logEl.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
+          logEl.innerHTML = `<strong>Sucesso!</strong> ${importados} evento(s) importado(s). ${musicasEncontradas} música(s) mapeada(s) com Tom/YouTube.`;
+        }
+        showToast(`${importados} evento(s) importado(s)!`, 'success');
+        renderEventosList();
+        renderCulto();
+      } catch (err) {
+        console.error(err);
+        if (logEl) {
+          logEl.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800');
+          logEl.classList.add('bg-red-50', 'text-red-700', 'border', 'border-red-200');
+          logEl.innerHTML = `<strong>Erro ao processar JSON:</strong> ${err.message}`;
+        }
+        showToast('Erro ao processar JSON: ' + err.message, 'error');
+      }
+    }
+
+    function carregarArquivoJSON(evt) {
+      const file = evt.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const textarea = document.getElementById('json-import-input');
+        if (textarea) textarea.value = e.target.result;
+        importarJSONPlanejamento();
+      };
+      reader.readAsText(file);
+    }
+
+    function preencherExemploJSON() {
+      const textarea = document.getElementById('json-import-input');
+      const exemplo = {
+        data: "2026-11-15",
+        hora: "10:00",
+        tipo: "Culto da Família",
+        tema: "Amigos para Sempre",
+        serie: "João 15.14-16",
+        pregador: "Pr. Fábio Félix",
+        ordem: [
+          { etapa: "Música 1 (Entrada)", min: 5, tipo: "musica", musica: { titulo: "Teu Amor Não Falha", tom: "Am", bpm: 114, youtube: "https://youtube.com/watch?v=3q-pRKf-VaQ" } },
+          { etapa: "Boas-vindas, Leitura Bíblica e Oração", min: 5, tipo: "liturgia" },
+          { etapa: "Louvor 1 — Te Conhecer", min: 7, tipo: "musica", musica: { titulo: "Te Conhecer", tom: "G", bpm: 122, cifra: "https://www.cifraclub.com.br/toque-no-altar/te-conhecer/", youtube: "https://youtube.com/watch?v=V5Sr25pAqdU" } },
+          { etapa: "Louvor 2 — Dízimos e Ofertas", min: 7, tipo: "musica", musica: { titulo: "Sou Casa", tom: "C", bpm: 65, youtube: "https://youtube.com/watch?v=5Cq70q4N3Xc" } },
+          { etapa: "Louvor 3 — O Amigo", min: 7, tipo: "musica", musica: { titulo: "O Amigo", tom: "A", youtube: "https://youtube.com/watch?v=IlUdDqvgCFA" } },
+          { etapa: "Oração de Transição", min: 3, tipo: "oracao" },
+          { etapa: "Mensagem — O Custo da Amizade", min: 40, tipo: "mensagem" },
+          { etapa: "Avisos da Semana", min: 5, tipo: "aviso" },
+          { etapa: "Louvor Final — Tu És Bom", min: 5, tipo: "musica", musica: { titulo: "Tu És Bom", tom: "E", bpm: 130, youtube: "https://youtube.com/watch?v=4gDi8FIJKHc" } },
+          { etapa: "Bênção Apostólica", min: 3, tipo: "bencao" },
+          { etapa: "Encerramento", min: 2, tipo: "encerramento" }
+        ],
+        escala: [
+          { funcao: "Direção", nome: "Presidência IBNS" },
+          { funcao: "Ministério de Louvor", nome: "Equipe Manancial" }
+        ]
+      };
+      if (textarea) textarea.value = JSON.stringify(exemplo, null, 2);
+    }
+
+    function baixarTemplateCultoJSON() {
+      const template = {
+        data: "AAAA-MM-DD",
+        hora: "10:00",
+        tipo: "Culto da Família",
+        tema: "Tema da Série",
+        serie: "Referência Bíblica",
+        pregador: "Nome do Pregador",
+        ordem: IBNS_TEMPLATES.culto_regular.itens
+      };
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(template, null, 2));
+      const a = document.createElement('a');
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", `modelo_culto_ibns.json`);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
     }
 
     function parseCSV(text) {
@@ -1689,58 +2213,163 @@
     }
 
     // ========================================================
-    // DRAG AND DROP (DESKTOP & TOUCH MOBILE)
+    // DRAG AND DROP ROBUSTO (DESKTOP & TOUCH MOBILE)
     // ========================================================
     function setupDragAndDrop() {
       const items = document.querySelectorAll('#ordem-list .drag-item');
       items.forEach(el => {
+        el.setAttribute('draggable', 'true');
         el.addEventListener('dragstart', (e) => {
-          dragSrcIdx = parseInt(el.dataset.index);
-          el.classList.add('dragging');
+          dragSrcIdx = parseInt(el.dataset.index, 10);
+          el.classList.add('dragging', 'opacity-50');
+          if (e.dataTransfer) {
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', String(dragSrcIdx));
+          }
         });
         el.addEventListener('dragend', () => {
-          el.classList.remove('dragging');
-          document.querySelectorAll('#ordem-list .drag-item').forEach(x => x.classList.remove('drag-over'));
+          el.classList.remove('dragging', 'opacity-50');
+          document.querySelectorAll('#ordem-list .drag-item').forEach(x => x.classList.remove('drag-over', 'border-sky-500', 'bg-sky-50/50'));
         });
         el.addEventListener('dragover', (e) => {
           e.preventDefault();
-          el.classList.add('drag-over');
+          if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+          const card = e.target.closest('.drag-item');
+          if (card) card.classList.add('drag-over', 'border-sky-500');
         });
-        el.addEventListener('dragleave', () => {
-          el.classList.remove('drag-over');
+        el.addEventListener('dragleave', (e) => {
+          const card = e.target.closest('.drag-item');
+          if (card) card.classList.remove('drag-over', 'border-sky-500');
         });
         el.addEventListener('drop', (e) => {
           e.preventDefault();
-          const targetIdx = parseInt(el.dataset.index);
-          if (dragSrcIdx !== null && dragSrcIdx !== targetIdx) {
+          const card = e.target.closest('.drag-item');
+          if (!card) return;
+          const targetIdx = parseInt(card.dataset.index, 10);
+          if (dragSrcIdx !== null && !isNaN(targetIdx) && dragSrcIdx !== targetIdx) {
             const moved = ordemItems.splice(dragSrcIdx, 1)[0];
             ordemItems.splice(targetIdx, 0, moved);
+            recalcularHorariosAdmin();
             renderOrdemAdmin();
           }
+          dragSrcIdx = null;
         });
+
+        // Touch Mobile Support
+        const handle = el.querySelector('.drag-handle');
+        if (handle) {
+          handle.addEventListener('touchstart', (e) => {
+            dragSrcIdx = parseInt(el.dataset.index, 10);
+            el.classList.add('opacity-50', 'ring-2', 'ring-sky-400');
+          }, { passive: true });
+
+          handle.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+            const card = targetEl ? targetEl.closest('#ordem-list .drag-item') : null;
+            document.querySelectorAll('#ordem-list .drag-item').forEach(x => x.classList.remove('bg-sky-50', 'border-sky-400'));
+            if (card && card !== el) {
+              card.classList.add('bg-sky-50', 'border-sky-400');
+            }
+          }, { passive: false });
+
+          handle.addEventListener('touchend', (e) => {
+            const touch = e.changedTouches[0];
+            const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+            const card = targetEl ? targetEl.closest('#ordem-list .drag-item') : null;
+            el.classList.remove('opacity-50', 'ring-2', 'ring-sky-400');
+            document.querySelectorAll('#ordem-list .drag-item').forEach(x => x.classList.remove('bg-sky-50', 'border-sky-400'));
+            if (card && dragSrcIdx !== null) {
+              const targetIdx = parseInt(card.dataset.index, 10);
+              if (!isNaN(targetIdx) && dragSrcIdx !== targetIdx) {
+                const moved = ordemItems.splice(dragSrcIdx, 1)[0];
+                ordemItems.splice(targetIdx, 0, moved);
+                recalcularHorariosAdmin();
+                renderOrdemAdmin();
+              }
+            }
+            dragSrcIdx = null;
+          });
+        }
       });
     }
 
     function setupCultoDragAndDrop() {
       const items = document.querySelectorAll('#culto-ordem-container .culto-ordem-item');
       items.forEach(el => {
-        el.addEventListener('dragstart', () => {
-          cultoDragSrcIdx = parseInt(el.dataset.index);
+        el.setAttribute('draggable', 'true');
+        el.addEventListener('dragstart', (e) => {
+          cultoDragSrcIdx = parseInt(el.dataset.index, 10);
           el.classList.add('opacity-40');
+          if (e.dataTransfer) {
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', String(cultoDragSrcIdx));
+          }
         });
         el.addEventListener('dragend', () => {
           el.classList.remove('opacity-40');
+          document.querySelectorAll('#culto-ordem-container .culto-ordem-item').forEach(x => x.classList.remove('border-amber-400', 'bg-amber-50/50'));
         });
-        el.addEventListener('dragover', (e) => e.preventDefault());
+        el.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+          const card = e.target.closest('.culto-ordem-item');
+          if (card) card.classList.add('border-amber-400');
+        });
+        el.addEventListener('dragleave', (e) => {
+          const card = e.target.closest('.culto-ordem-item');
+          if (card) card.classList.remove('border-amber-400');
+        });
         el.addEventListener('drop', (e) => {
           e.preventDefault();
-          const targetIdx = parseInt(el.dataset.index);
-          if (cultoDragSrcIdx !== null && cultoDragSrcIdx !== targetIdx) {
+          const card = e.target.closest('.culto-ordem-item');
+          if (!card) return;
+          const targetIdx = parseInt(card.dataset.index, 10);
+          if (cultoDragSrcIdx !== null && !isNaN(targetIdx) && cultoDragSrcIdx !== targetIdx) {
             const moved = cultoTempOrder.splice(cultoDragSrcIdx, 1)[0];
             cultoTempOrder.splice(targetIdx, 0, moved);
             renderCultoOrderItems();
           }
+          cultoDragSrcIdx = null;
         });
+
+        // Touch Mobile Support
+        const handle = el.querySelector('.culto-drag-handle');
+        if (handle) {
+          handle.addEventListener('touchstart', (e) => {
+            cultoDragSrcIdx = parseInt(el.dataset.index, 10);
+            el.classList.add('opacity-50', 'ring-2', 'ring-amber-400');
+          }, { passive: true });
+
+          handle.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+            const card = targetEl ? targetEl.closest('#culto-ordem-container .culto-ordem-item') : null;
+            document.querySelectorAll('#culto-ordem-container .culto-ordem-item').forEach(x => x.classList.remove('bg-amber-50', 'border-amber-400'));
+            if (card && card !== el) {
+              card.classList.add('bg-amber-50', 'border-amber-400');
+            }
+          }, { passive: false });
+
+          handle.addEventListener('touchend', (e) => {
+            const touch = e.changedTouches[0];
+            const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+            const card = targetEl ? targetEl.closest('#culto-ordem-container .culto-ordem-item') : null;
+            el.classList.remove('opacity-50', 'ring-2', 'ring-amber-400');
+            document.querySelectorAll('#culto-ordem-container .culto-ordem-item').forEach(x => x.classList.remove('bg-amber-50', 'border-amber-400'));
+            if (card && cultoDragSrcIdx !== null) {
+              const targetIdx = parseInt(card.dataset.index, 10);
+              if (!isNaN(targetIdx) && cultoDragSrcIdx !== targetIdx) {
+                const moved = cultoTempOrder.splice(cultoDragSrcIdx, 1)[0];
+                cultoTempOrder.splice(targetIdx, 0, moved);
+                renderCultoOrderItems();
+              }
+            }
+            cultoDragSrcIdx = null;
+          });
+        }
       });
     }
 
@@ -1780,6 +2409,11 @@
     document.addEventListener('DOMContentLoaded', () => {
       initCalendar();
       initAdminForm();
+      // Inicia verificação do Holyrics a cada 10 segundos
+      atualizarHolyricsAoVivo();
+      if (!holyricsPollingTimer) {
+        holyricsPollingTimer = setInterval(atualizarHolyricsAoVivo, 10000);
+      }
     });
   </script>
 

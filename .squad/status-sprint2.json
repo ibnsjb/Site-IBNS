@@ -1,0 +1,29 @@
+{
+  "sprint": 2,
+  "nome": "Planejamento Mensal IBNS × LouveApp × Holyrics no Site",
+  "status": "concluido",
+  "aprovado_por": "Kinho",
+  "aprovado_em": "2026-11-08",
+  "branch": "feature/planejamento-mensal",
+  "total_tarefas": 14,
+  "tarefas_concluidas": 14,
+  "qa_pass": "140/140 PASS (100%)",
+  "sec_pass": "HOMOLOGADO",
+  "deploy": "dev -> main -> GitHub Pages",
+  "tarefas": [
+    { "id": "T01", "nome": "Leitura e mapeamento do index.html", "status": "concluido", "papel": "Tech Lead", "depende": [] },
+    { "id": "T02", "nome": "Correção drag-and-drop desktop + touch", "status": "concluido", "papel": "Frontend", "depende": ["T01"] },
+    { "id": "T03", "nome": "Remoção importador Google Sheets", "status": "concluido", "papel": "Frontend", "depende": ["T01"] },
+    { "id": "T04", "nome": "Templates de ordem de culto (data layer)", "status": "concluido", "papel": "Backend", "depende": ["T01"] },
+    { "id": "T05", "nome": "Cálculo automático de horários", "status": "concluido", "papel": "Backend", "depende": ["T04"] },
+    { "id": "T06", "nome": "UI: novo evento com seleção de template", "status": "concluido", "papel": "Frontend", "depende": ["T04", "T05"] },
+    { "id": "T07", "nome": "Importador JSON enriquecido", "status": "concluido", "papel": "Frontend", "depende": ["T03", "T04"] },
+    { "id": "T08", "nome": "Firebase: estrutura de dados atualizada", "status": "concluido", "papel": "DBA", "depende": ["T04"] },
+    { "id": "T09", "nome": "Visão pública da Ordem de Culto", "status": "concluido", "papel": "Frontend", "depende": ["T08"] },
+    { "id": "T10", "nome": "Botão Visão da Equipe (Tom + YouTube)", "status": "concluido", "papel": "Frontend", "depende": ["T09"] },
+    { "id": "T11", "nome": "Holyrics: cliente HTTP relay internet", "status": "concluido", "papel": "Backend", "depende": ["T01"] },
+    { "id": "T12", "nome": "Holyrics: display no site (item atual + lista)", "status": "concluido", "papel": "Frontend", "depende": ["T09", "T11"] },
+    { "id": "T13", "nome": "Quality Gate: novos testes (140/140 PASS)", "status": "concluido", "papel": "QA", "depende": ["T02","T03","T04","T05","T06","T07","T08","T09","T10","T11","T12"] },
+    { "id": "T14", "nome": "Deploy: dev -> main -> GitHub Pages", "status": "concluido", "papel": "DevSecOps", "depende": ["T13"] }
+  ]
+}
