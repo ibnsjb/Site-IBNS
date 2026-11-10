@@ -1,41 +1,41 @@
 {
   "project_id": "site-ibns",
   "project_name": "⛪ Site IBNS (Liturgia, Escalas & Painel)",
-  "badge": "HOMOLOGADO · SPRINT 2 (TEMPLATES, HOLYRICS, JSON ENRIQUECIDO & 140/140 QA-PASS)",
-  "updated_at": "2026-11-08T16:12:00.000Z",
-  "classification": "G",
+  "badge": "HOMOLOGADO · AJUSTES OPERACIONAIS (LOGIN NO TOPO, HOLYRICS OFICIAL & NOVO LOGO 2026 - 144/144 QA-PASS)",
+  "updated_at": "2026-11-10T04:54:00.000Z",
+  "classification": "M",
   "overall_progress": 100,
   "stages": {
-    "ux_requirements": {
-      "name": "1. Refinamento /grill-with-docs & Templates Canônicos",
+    "admin_login_ux": {
+      "name": "1. Posicionamento do Login Admin no Topo",
       "percent": 100,
-      "status": "Concluído (Templates Regular, Ceia, Kids e Visão da Equipe aprovados)"
+      "status": "Concluído (Overlay alinhado ao topo, sticky top-24, scroll automático e foco no input)"
     },
-    "arch_dba": {
-      "name": "2. Arquitetura de Dados Enriquecida & Firebase (DBA)",
+    "holyrics_relay_internet": {
+      "name": "2. Revisão Conforme Documentação Holyrics API-Server & Supabase Relay",
       "percent": 100,
-      "status": "Concluído (Contrato JSON com músicas, Tom, BPM e YouTube homologado)"
+      "status": "Concluído (Headers oficiais api_key e token, tratamento de erros e Edge Function holyrics-relay ativa com CORS)"
     },
-    "frontend_mobile": {
-      "name": "3. Frontend SPA, Drag & Drop e Visão Equipe",
+    "top_cleanup": {
+      "name": "3. Remoção do Elemento 'São Bernardo' do Topo",
       "percent": 100,
-      "status": "Concluído (Drag & Drop desktop/touch corrigido, Visão da Equipe e Widget Holyrics)"
+      "status": "Concluído (Badge geográfico removido do Header principal)"
     },
-    "backend_api": {
-      "name": "4. Cálculo de Horários & Relay Web Holyrics",
+    "liturgy_wording": {
+      "name": "4. Alteração de 'Progresso Litúrgico' para 'Progresso do Culto'",
       "percent": 100,
-      "status": "Concluído (Cálculo automático de horários e cliente Holyrics Relay internet)"
+      "status": "Concluído (Texto atualizado no banner interativo da Ordem de Culto)"
     },
-    "qa_tests": {
-      "name": "5. QA & Suíte de Testes Automatizados (Meta >= 130)",
+    "brand_2026_logo": {
+      "name": "5. Nova Logo Oficial IBNS Versão 2026",
       "percent": 100,
-      "status": "Concluído (140/140 testes aprovados QA-PASS 100%)"
+      "status": "Concluído (Assets PNG de alta resolução e SVGs copiados, data URI 400x400 embutido)"
     },
-    "devsecops_sre": {
-      "name": "6. DevSecOps & Deploy GitHub Pages (dev -> main)",
+    "qa_devsecops": {
+      "name": "6. Quality Gate & Deploy Contínuo (dev -> main)",
       "percent": 100,
-      "status": "Concluído (Branch feature mesclada em dev e promovida para main com SEC-PASS)"
+      "status": "Concluído (144/144 testes aprovados QA-PASS 100% e SEC-PASS, GitHub Pages HTTP 200)"
     }
   },
-  "current_sprint": "Sprint 2 - Concluída e Homologada com Sucesso (140/140 QA-PASS & SEC-PASS)"
+  "current_sprint": "Ajustes Operacionais - Concluídos com 144/144 QA-PASS & Deploy Realizado"
 }
