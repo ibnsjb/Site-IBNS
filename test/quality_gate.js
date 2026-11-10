@@ -368,20 +368,45 @@ test('Função getHolyricsConfig() carrega credenciais do plano Advanced', () =>
   assert.strictEqual(cfg.token, '92UDttLU8196OFX5');
 });
 
-test('Função holyricsRequest() constrói URL HTTPS segura com token e header api_key', async () => {
+test('Função holyricsRequest() envia headers api_key e token conforme doc oficial Holyrics', async () => {
   let calledUrl = '';
   let calledHeaders = {};
   vmContext.fetch = (url, opts) => {
     calledUrl = url;
     calledHeaders = opts.headers;
     return Promise.resolve({
-      json: () => Promise.resolve({ status: 'ok', response_status: 'ok', response: { status: 'ok' } })
+      json: () => Promise.resolve({ status: 'ok', response_status: 'ok', response: { status: 'ok', data: { text: 'Santo, Santo' } } })
     });
   };
   const res = await vmContext.holyricsRequest('GetCPInfo');
-  assert(calledUrl.startsWith('https://api.holyrics.com.br/request/GetCPInfo?token='), 'URL Holyrics incorreta');
+  assert(calledUrl.includes('GetCPInfo'), 'URL Holyrics não contém a ação GetCPInfo');
   assert.strictEqual(calledHeaders['api_key'], 'HXHSJKJuL5hDxHoxCYOnuUmtW1sqSLONOPWFDaaj6nbJqJPfAcIN8Q3KMRgiu8Lc');
+  assert.strictEqual(calledHeaders['token'], '92UDttLU8196OFX5');
+  assert.strictEqual(calledHeaders['Content-Type'], 'application/json');
   assert.strictEqual(res.status, 'ok');
+  assert.strictEqual(res.ok, true);
+});
+
+test('Rótulo do progresso litúrgico alterado para "Progresso do Culto" conforme item 4', () => {
+  assert(content.includes('Progresso do Culto'), '"Progresso do Culto" não encontrado no index.html');
+  assert(!content.includes('Progresso Litúrgico'), '"Progresso Litúrgico" legado ainda presente no index.html');
+});
+
+test('Remoção do badge geográfico "São Bernardo" no topo conforme item 3', () => {
+  assert(!content.includes('São Bernardo'), 'Elemento "São Bernardo" ainda presente no index.html');
+});
+
+test('Painel Admin: Overlay de autenticação posicionado no topo da tela conforme item 1', () => {
+  assert(content.includes('justify-start pt-8'), 'Overlay de senha não está alinhado ao topo com justify-start');
+  assert(content.includes('sticky top-20') || content.includes('sticky top-24'), 'Container de senha não possui posicionamento sticky no topo');
+});
+
+test('Brand 2026: Nova Logo oficial IBNS presente em assets e embutida no header', () => {
+  assert(fs.existsSync(path.join(__dirname, '..', 'assets', 'logo-ibns.png')), 'logo-ibns.png ausente');
+  assert(fs.existsSync(path.join(__dirname, '..', 'assets', 'logo-ibns-branco.svg')), 'logo-ibns-branco.svg ausente');
+  assert(fs.existsSync(path.join(__dirname, '..', 'assets', 'logo-ibns-preto.svg')), 'logo-ibns-preto.svg ausente');
+  const pngStat = fs.statSync(path.join(__dirname, '..', 'assets', 'logo-ibns.png'));
+  assert(pngStat.size > 50000, `Nova logo PNG deve ser de alta resolução (>50KB): ${pngStat.size} bytes`);
 });
 
 // 4.6 Teste de Importação de JSON Enriquecido com Músicas e Tom
