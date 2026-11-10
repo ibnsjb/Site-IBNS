@@ -1,41 +1,31 @@
 {
   "project_id": "site-ibns",
   "project_name": "⛪ Site IBNS (Liturgia, Escalas & Painel)",
-  "badge": "HOMOLOGADO · AJUSTES OPERACIONAIS (LOGIN NO TOPO, HOLYRICS OFICIAL & NOVO LOGO 2026 - 144/144 QA-PASS)",
-  "updated_at": "2026-11-10T04:54:00.000Z",
+  "badge": "HOMOLOGADO · PROJEÇÃO REAL HOLYRICS, MÁSCARA DE CREDENCIAIS & LOGO BRANCO (150/150 QA-PASS)",
+  "updated_at": "2026-11-10T05:23:00.000Z",
   "classification": "M",
   "overall_progress": 100,
   "stages": {
-    "admin_login_ux": {
-      "name": "1. Posicionamento do Login Admin no Topo",
+    "live_presentation": {
+      "name": "1. Projeção Real Holyrics (GetCurrentPresentation)",
       "percent": 100,
-      "status": "Concluído (Overlay alinhado ao topo, sticky top-24, scroll automático e foco no input)"
+      "status": "Concluído (Substituído GetCPInfo por GetCurrentPresentation, detectando músicas, slides e versículos reais)"
     },
-    "holyrics_relay_internet": {
-      "name": "2. Revisão Conforme Documentação Holyrics API-Server & Supabase Relay",
+    "credentials_security": {
+      "name": "2. Mascaramento de Chaves de Conexão (***)",
       "percent": 100,
-      "status": "Concluído (Headers oficiais api_key e token, tratamento de erros e Edge Function holyrics-relay ativa com CORS)"
+      "status": "Concluído (Inputs convertidos para type='password' com botão de alternância e proteção visual)"
     },
-    "top_cleanup": {
-      "name": "3. Remoção do Elemento 'São Bernardo' do Topo",
+    "white_logo_contrast": {
+      "name": "3. Logo Oficial IBNS Branco no Fundo Azul",
       "percent": 100,
-      "status": "Concluído (Badge geográfico removido do Header principal)"
-    },
-    "liturgy_wording": {
-      "name": "4. Alteração de 'Progresso Litúrgico' para 'Progresso do Culto'",
-      "percent": 100,
-      "status": "Concluído (Texto atualizado no banner interativo da Ordem de Culto)"
-    },
-    "brand_2026_logo": {
-      "name": "5. Nova Logo Oficial IBNS Versão 2026",
-      "percent": 100,
-      "status": "Concluído (Assets PNG de alta resolução e SVGs copiados, data URI 400x400 embutido)"
+      "status": "Concluído (Substituída logo preta pela versão branca 2026 de alto contraste em assets e inline base64)"
     },
     "qa_devsecops": {
-      "name": "6. Quality Gate & Deploy Contínuo (dev -> main)",
+      "name": "4. Quality Gate & Deploy Contínuo (dev -> main)",
       "percent": 100,
-      "status": "Concluído (144/144 testes aprovados QA-PASS 100% e SEC-PASS, GitHub Pages HTTP 200)"
+      "status": "Concluído (150/150 testes aprovados QA-PASS 100% e SEC-PASS, GitHub Pages HTTP 200)"
     }
   },
-  "current_sprint": "Ajustes Operacionais - Concluídos com 144/144 QA-PASS & Deploy Realizado"
+  "current_sprint": "Refinamento Holyrics Live & Identidade Visual 2026 - Concluído (150/150 QA-PASS)"
 }
