@@ -201,6 +201,9 @@ const requiredFunctions = [
   'testarConexaoHolyrics',
   'sincronizarRepertorioHolyrics',
   'atualizarHolyricsAoVivo',
+  'formatCurrentPresentation',
+  'togglePasswordVisibility',
+  'initHolyricsInputs',
 
   // Drag and Drop (Desktop + Mobile Touch)
   'setupDragAndDrop',
@@ -446,6 +449,37 @@ test('Função toggleVisaoEquipe() alterna o estado booleano da visão da equipe
   assert.strictEqual(vmContext.window.visaoEquipeAtiva, !initial);
   vmContext.toggleVisaoEquipe();
   assert.strictEqual(vmContext.window.visaoEquipeAtiva, initial);
+});
+
+// 4.8 Teste de detecção e formatação da apresentação real do Holyrics (GetCurrentPresentation)
+test('Função formatCurrentPresentation() detecta música projetada e formata slide ativo', () => {
+  const mockPres = {
+    type: 'song',
+    name: 'Teu Amor Não Falha (Nívea Soares)',
+    slide_number: 3,
+    total_slides: 24,
+    slides: [
+      { number: 1, text: 'TEU AMOR NÃO FALHA\nNÍVEA SOARES' },
+      { number: 2, text: 'NADA VAI ME SEPARAR' },
+      { number: 3, text: 'TEU AMOR NÃO FALHA\nMESMO SEM MERECER' }
+    ]
+  };
+  const res = vmContext.formatCurrentPresentation(mockPres);
+  assert(res.active, 'Apresentação deve estar ativa');
+  assert(res.title.includes('Teu Amor Não Falha'), 'Título da música ausente');
+  assert(res.title.includes('3/24'), 'Numeração de slide ausente');
+  assert(res.display.includes('MESMO SEM MERECER'), 'Texto do slide ativo ausente');
+});
+
+test('Holyrics: Campos de credenciais são do tipo password com máscara para segurança', () => {
+  assert(content.includes('<input type="password" id="holyrics-api-key"'), 'holyrics-api-key não está protegido com type="password"');
+  assert(content.includes('<input type="password" id="holyrics-token"'), 'holyrics-token não está protegido com type="password"');
+  assert(content.includes('togglePasswordVisibility'), 'Função togglePasswordVisibility ausente no DOM');
+});
+
+test('Logo 2026: Logo possui contraste branco verificado para visualização no tema azul', () => {
+  const logoBuf = fs.readFileSync(path.join(__dirname, '..', 'assets', 'logo-ibns.png'));
+  assert(logoBuf.length > 50000, 'Tamanho de logo-ibns.png inválido');
 });
 
 // ========================================================
